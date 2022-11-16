@@ -4,13 +4,13 @@
 
 1. 这是一个基于 indexedDB 封装实现的 npm package
 2. 使用方法很简单，只需要通过 `Promise.then()` 的方式就可以读取、存储、移除数据
-3. 此外，该 package 封装了基于 vue 的 composition API，可以方便地应用于你的 vue 项目中
 
-### 🔨安装
+### 🔨 安装
 ```
 npm i @wzdong/idb -S
 ```
-
+### 📙 Github地址
+https://github.com/wzdong26/-wzdong/tree/main/idb
 
 ## 🌰 示例
 ``` typescript
@@ -35,9 +35,10 @@ store.getData().then(data => console.log(data))
 store.removeData(yourData).then(() => console.log('remove success!'))
 ```
 之后你就可以通过这种方式在你的项目中随心所欲地运用 indexedDB 了。这个写法是不是很像 localStorage ，对，就是这么简单。仅仅是变成了异步 Promise 的实现方式。
+### 🌰 Js应用示例(表单存储)
+https://code.juejin.cn/api/raw/7166548718001324071?id=7166548718001373223
 
-
-### 🧐Q&A：
+### 🧐 Q&A：
 - 为什么要用 indexedDB 而不用更简单的 localStorage ?
 1. indexedDB 原生支持 object、Date、undefined、null、NaN、Infinity、以及自引用object的读写。这是 localStorage 所不支持的，虽然可以借助 `JSON.stringify()` 实现转换，但仍然难以支持Date、undefined、null、NaN、Infinity、以及自引用object这些类型。
 2. indexedDB 的存储空间足够大，一般来说不少于250M，大小一般是硬盘大小的 50%。而 localStorage 最大存储量一般不高于 5M。

@@ -22,10 +22,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useStore = exports.deleteDB = exports.initStore = void 0;
-var init_1 = __importStar(require("./init"));
-Object.defineProperty(exports, "initStore", { enumerable: true, get: function () { return init_1.initStore; } });
-Object.defineProperty(exports, "deleteDB", { enumerable: true, get: function () { return init_1.deleteDB; } });
-var useStore_1 = __importDefault(require("./vueuse/useStore"));
-exports.useStore = useStore_1.default;
-exports.default = init_1.default;
+exports.deleteDB = exports.initStore = void 0;
+var setupDB_1 = __importStar(require("./setupDB"));
+Object.defineProperty(exports, "deleteDB", { enumerable: true, get: function () { return setupDB_1.deleteDB; } });
+var initStore_1 = __importDefault(require("./initStore"));
+exports.initStore = initStore_1.default;
+exports.default = setupDB_1.default;

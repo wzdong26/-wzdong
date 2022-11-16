@@ -1,4 +1,4 @@
-import setupDB, { initStore, deleteDB } from './init';
-import useStore from './vueuse/useStore';
+import setupDB, { deleteDB } from './setupDB';
+import initStore from './initStore';
 export default setupDB;
-export { initStore, deleteDB, useStore };
+export { initStore, deleteDB };
