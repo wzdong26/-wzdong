@@ -1,0 +1,23 @@
+{
+    "name": "@wzdong/idb",
+    "version": "1.0.5",
+    "description": "Let your application use indexedDB simply with `Promise`",
+    "main": "lib/index.js",
+    "author": "wzdong",
+    "license": "MIT",
+    "keywords": ["indexedDB", "db", "localStorage"],
+    "files": [
+        "lib/**/*",
+        "readme.md"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "prepare": "npm run build"
+    },
+    "dependencies": {
+        "vue": "^3.2.16"
+    },
+    "devDependencies": {
+        "typescript": "^4.8.3"
+    }
+}
