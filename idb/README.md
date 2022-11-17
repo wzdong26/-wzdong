@@ -1,7 +1,7 @@
 # @wzdong/idb
 
 ## 📙 写在前面：
-    如果你不满足于 localStorage 的存储容量或是其支持的数据格式，可以试试 indexedDB ，如果你觉得 indexedDB 使用起来操作繁琐，那你不妨来试试 `@wzdong/idb`，试过了就知道它有多么好用，让你像操作 localStorage 那么简单的操作 indexedDB！😜😜
+>如果你不满足于 localStorage 的存储容量或是其支持的数据格式，可以试试 indexedDB ，如果你觉得 indexedDB 使用起来操作繁琐，那你不妨来试试 `@wzdong/idb`，试过了就知道它有多么好用，让你像操作 localStorage 那么简单的操作 indexedDB！😜😜
 
 1. 这是一个基于 indexedDB 封装实现的 npm package
 2. 使用方法很简单，只需要通过 `Promise.then()` 的方式就可以读取、存储、移除数据
@@ -129,6 +129,7 @@ setupDB({store: storesInfo})
 
 - wzdong
 - Email: wzdong.26@qq.com
+- github: https://github.com/wzdong26
 - 掘金主页: https://juejin.cn/user/1764078817409022
 
 ## 👨‍🔧反馈

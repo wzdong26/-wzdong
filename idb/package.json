@@ -1,6 +1,6 @@
 {
     "name": "@wzdong/idb",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "description": "Let your application use indexedDB simply with `Promise`",
     "main": "lib/index.js",
     "author": "wzdong",
