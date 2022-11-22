@@ -8,7 +8,8 @@
     "keywords": ["indexedDB", "db", "localStorage"],
     "files": [
         "lib/**/*",
-        "readme.md"
+        "README.md",
+        "README.en.md"
     ],
     "scripts": {
         "build": "tsc",
