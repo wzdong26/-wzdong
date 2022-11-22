@@ -5,7 +5,11 @@
     "main": "lib/index.js",
     "author": "wzdong",
     "license": "MIT",
-    "keywords": ["indexedDB", "db", "localStorage"],
+    "keywords": [
+        "indexedDB",
+        "db",
+        "localStorage"
+    ],
     "files": [
         "lib/**/*",
         "README.md",
@@ -15,8 +19,7 @@
         "build": "tsc",
         "prepare": "npm run build"
     },
-    "dependencies": {
-    },
+    "dependencies": {},
     "devDependencies": {
         "typescript": "^4.8.3"
     }
