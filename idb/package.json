@@ -1,6 +1,6 @@
 {
     "name": "@wzdong/idb",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "description": "Let your application use indexedDB simply with `Promise`",
     "main": "lib/index.js",
     "author": "wzdong",
@@ -12,8 +12,7 @@
     ],
     "files": [
         "lib/**/*",
-        "README.md",
-        "README.en.md"
+        "README.md"
     ],
     "scripts": {
         "build": "tsc",

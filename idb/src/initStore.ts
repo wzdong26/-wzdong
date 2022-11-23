@@ -1,3 +1,10 @@
+/**
+ * @title initStore
+ * @author wzdong
+ * @description 创建 IndexedDB store 数据仓库，包含 store 的基本操作，读、写、移除数据以及删除 store
+ * @export default {@link initStore}
+ */
+
 import { DbStoreInfo, DEFAULT_KEYPATH, DEFAULT_STORE_NAME } from './config';
 import setupDB, { get, put, remove } from './setupDB';
 import type { InitDB } from './setupDB';
@@ -26,7 +33,6 @@ export default function initStore<T extends {} = {}>(
                     isCreating = true;
                     return await db.createStore(storeInfo).then((e) => {
                         isCreating = false;
-                        console.log(e);
                         return e.getStore(storeName, mode);
                     });
                 }

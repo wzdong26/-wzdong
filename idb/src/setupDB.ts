@@ -69,11 +69,6 @@ const openDB = ((
             // 打开数据库，若没有则会创建
             if (!reqOpenDB) {
                 reqOpenDB = indexedDB.open(name, version);
-            } else if (options) {
-                console.warn(
-                    'Open indexedDB Options is invalid because the previous db opening request has not completed!',
-                    options
-                );
             }
             const reset = () => {
                 reqOpenDB?.removeEventListener('success', onsuccess);
@@ -104,14 +99,7 @@ const openDB = ((
                 }, 500);
             };
             reqOpenDB.addEventListener('upgradeneeded', onupgradeneeded);
-            // const interval = setInterval(() => {
-            //     if (_db) {
-            //         reset();
-            //         resolve(_db);
-            //     }
-            // }, timeout / 5);
             setTimeout(() => {
-                // clearInterval(interval);
                 reset();
                 reject('Request IndexedDB Timeout!');
             }, timeout);
@@ -131,7 +119,7 @@ const updateDB = (
         if (db.objectStoreNames.length === 0) {
             const dbName = db.name;
             db.close();
-            indexedDB.deleteDatabase(dbName);
+            deleteDB(dbName);
         } else {
             version = db.version + 1;
             db.close();
@@ -162,8 +150,7 @@ const setupDB = (() => {
         if (_db) {
             if (opt) {
                 console.warn(
-                    'Open indexedDB Options is invalid because the db is already opened!',
-                    opt
+                    'Open indexedDB Options is invalid because the db is already opened!'
                 );
             }
             return _db;
@@ -189,7 +176,6 @@ export const deleteDB = (name: string = DB_NAME) => {
 };
 
 // ----------------------------- store
-// 写在onDBOpen，或onDBUpdate里面
 
 // 创建store(ObjectStore)
 const createStore = (
@@ -209,7 +195,7 @@ const createStore = (
     return store;
 };
 
-// 创建配置项{@link DB_STORES}中的所有Store
+// 创建配置项{@link storesInfo}中的所有Store
 const createAllStore = (db: IDBDatabase, storesInfo: DbStoreInfo[]) => {
     // `createAllStore` must be called when the database is `onupgradeneeded`.
     storesInfo.forEach((storeInfo) => createStore(db, storeInfo));
@@ -234,7 +220,6 @@ const getStore = (
     try {
         tx = db.transaction(storeName, mode);
     } catch (err) {
-        // updateDB(db)
         throw new Error(
             `[IndexDB] Store named '${storeName}' cannot be found in the database`
         );
@@ -242,7 +227,7 @@ const getStore = (
     return tx.objectStore(storeName);
 };
 
-// store 基本操作
+// -------------------- store 基本操作
 
 // 增
 export const add = (store: IDBObjectStore, data: any) =>
