@@ -1,0 +1,23 @@
+{
+    "name": "@wzdong/evtlistener",
+    "version": "0.0.1",
+    "description": "Event listener",
+    "main": "lib/index.js",
+    "author": "wzdong",
+    "license": "MIT",
+    "keywords": [
+        "EventListener"
+    ],
+    "files": [
+        "lib/**/*",
+        "README.md"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "prepare": "npm run build"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "typescript": "^4.8.3"
+    }
+}
