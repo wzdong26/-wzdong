@@ -1,0 +1,26 @@
+{
+    "name": "@wzdong/geo",
+    "version": "0.0.0",
+    "description": "Geographic JavaScript Library",
+    "main": "lib/index.js",
+    "author": "wzdong",
+    "license": "MIT",
+    "keywords": [
+        "indexedDB",
+        "db",
+        "localStorage"
+    ],
+    "files": [
+        "lib/**/*",
+        "README.md",
+        "README.en.md"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "prepare": "npm run build"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "typescript": "^4.8.3"
+    }
+}
