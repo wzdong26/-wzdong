@@ -1,4 +1,4 @@
-# 📖 `@wzdong/idb` Documentation
+# 📖 `@wzdong/idb` Documentation ([👉 中文版](https://github.com/wzdong26/-wzdong/tree/main/idb/md/document_zh.md))
 
 ## 🔨 Installation
 

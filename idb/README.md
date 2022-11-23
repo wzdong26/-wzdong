@@ -8,8 +8,8 @@
 
 > If you are not satisfied with the size of localStorage or the data format it supports, you can try indexedDB. If you find indexedDB cumbersome to use, you can try `@wzdong/idb`. indexedDB lets you manipulate IndexedDB as easily as localStorage! 😜😜
 
-1. This is an npm package based on the indexedDB encapsulation implementation
-2. The method of use is very simple, you only need to read, store, and remove data through `Promise.then()`
+1. **This is an npm package based on `indexedDB` and the size is only about 30kB.**
+2. **The method of use is very simple, you only need to read, store, and remove data through `Promise.then()` .**
 
 ### 🔨 Installation
 
@@ -17,9 +17,9 @@
 npm i @wzdong/idb -S
 ```
 
-### 📙 Github address
-
-https://github.com/wzdong26/-wzdong/tree/main/idb
+> ### 📙 Github: https://github.com/wzdong26/-wzdong/tree/main/idb
+>
+> ### 📖 Documentation: https://github.com/wzdong26/-wzdong/tree/main/idb/md/document.md
 
 ## 🌰 Example
 
@@ -51,15 +51,11 @@ You can then use indexedDB however you want in your project this way. Isn't this
 
 https://code.juejin.cn/pen/7166548718001324071
 
-## 📖 Documentation
-
-https://github.com/wzdong26/-wzdong/tree/main/idb/md/document.md
-
 ## 🧐 Q&A：
 
 - Why use indexedDB instead of simpler localStorage?
 
-1. IndexedDB natively supports reading and writing object, Date, undefined, null, NaN, Infinity, and self-referencing objects. This is not supported by localStorage, and although `JSON.stringify()` conversions can be implemented with the help of , it is still difficult to support Date, undefined, null, NaN, Infinity, and self-referencing object types.
+1. IndexedDB natively supports reading and writing objects, Date, undefined, NaN, Infinity, and self-referencing objects. This is not supported by localStorage, and although it is possible to convert with the help of `JSON.stringify()`, it is still difficult to fully support these types mentioned above.
 2. The storage space of indexedDB is large enough, generally not less than 250M, and the size is generally 50% of the size of the hard disk. The maximum storage capacity of localStorage is generally not higher than 5M.
 3. IndexDB is natively implemented asynchronously, so you don't have to worry about using it to prevent the normal operation of your application by making errors in reading and writing data.
 
@@ -69,7 +65,8 @@ https://github.com/wzdong26/-wzdong/tree/main/idb/md/document.md
 
 ## 💡 Design Ideas
 
-![Flow chart(zh)](https://github.com/wzdong26/-wzdong/tree/main/idb/md/@wzdong_db.png)
+![](https://github.com/wzdong26/-wzdong/blob/main/idb/md/@wzdong_idb.png?raw=true)
+[Flow chart(zh)](https://raw.githubusercontent.com/wzdong26/-wzdong/main/idb/md/%40wzdong_idb.png)
 
 ## 🙆‍♂️ Contributor
 
