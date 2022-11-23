@@ -64,10 +64,6 @@ const openDB = ((
         new Promise((resolve, reject) => {
             const opt = { ...openDBOptions, ...(options || {}) };
             const { name, version, onUpdate, timeout } = opt;
-            const reset = () => {
-                reqOpenDB = null;
-                openDBOptions = opt;
-            };
             //  兼容浏览器
             const indexedDB = compatIndexedDB();
             // 打开数据库，若没有则会创建
@@ -79,17 +75,26 @@ const openDB = ((
                     options
                 );
             }
-            reqOpenDB.onsuccess = (evt) => {
+            const reset = () => {
+                reqOpenDB?.removeEventListener('success', onsuccess);
+                reqOpenDB?.removeEventListener('error', onerror);
+                reqOpenDB?.removeEventListener('upgradeneeded', onupgradeneeded);
+                reqOpenDB = null;
+                openDBOptions = opt;
+            };
+            const onsuccess = (evt: Event) => {
                 const db = (evt.currentTarget as IDBOpenDBRequest).result;
                 _db = addDBFcn(db);
                 reset();
                 resolve(_db); // 数据库对象
-            };
-            reqOpenDB.onerror = (evt) => {
+            }
+            reqOpenDB.addEventListener('success', onsuccess);
+            const onerror = (evt: Event) => {
                 reset();
                 reject((evt.target as IDBOpenDBRequest).error);
             };
-            reqOpenDB.onupgradeneeded = (evt) => {
+            reqOpenDB.addEventListener('error', onerror);
+            const onupgradeneeded = (evt: Event) => {
                 const db = (evt.currentTarget as IDBOpenDBRequest).result;
                 const _db = addDBFcn(db);
                 reset();
@@ -98,14 +103,15 @@ const openDB = ((
                     resolve(_db);
                 }, 500);
             };
-            const interval = setInterval(() => {
-                if (_db) {
-                    reset();
-                    resolve(_db);
-                }
-            }, timeout / 5);
+            reqOpenDB.addEventListener('upgradeneeded', onupgradeneeded);
+            // const interval = setInterval(() => {
+            //     if (_db) {
+            //         reset();
+            //         resolve(_db);
+            //     }
+            // }, timeout / 5);
             setTimeout(() => {
-                clearInterval(interval);
+                // clearInterval(interval);
                 reset();
                 reject('Request IndexedDB Timeout!');
             }, timeout);
@@ -322,7 +328,7 @@ export const removeByIndex = (
                         `[IndexDB] Failed to delete the record ${cursor}`
                     );
                 };
-                reqDelete.onsuccess = () => {};
+                reqDelete.onsuccess = () => { };
                 cursor.continue();
             } else {
                 resolve({ delete: 'done' });
