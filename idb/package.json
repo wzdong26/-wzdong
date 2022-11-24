@@ -1,25 +1,32 @@
 {
     "name": "@wzdong/idb",
-    "version": "1.1.0",
-    "description": "Let your application use indexedDB simply with `Promise`",
+    "version": "1.1.2",
+    "description": "💡 Let your application use indexedDB simply with `Promise`",
     "main": "lib/index.js",
     "author": "wzdong",
     "license": "MIT",
-    "keywords": [
-        "indexedDB",
-        "db",
-        "localStorage"
-    ],
     "files": [
         "lib/**/*",
         "README.md"
     ],
     "scripts": {
-        "build": "tsc",
-        "prepare": "npm run build"
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "prepare": "pnpm build"
     },
     "dependencies": {},
     "devDependencies": {
         "typescript": "^4.8.3"
-    }
+    },
+    "private": false,
+    "keywords": [
+        "indexedDB",
+        "db",
+        "localStorage"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/wzdong26/-wzdong/tree/main/idb"
+    },
+    "bugs": "https://github.com/wzdong26/-wzdong/issues"
 }

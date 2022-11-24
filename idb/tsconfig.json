@@ -1,14 +1,15 @@
 {
     "compilerOptions": {
-        "target": "es5",
-        "useDefineForClassFields": true,
-        "module": "CommonJS",
+        // "target": "es6",
+        // "useDefineForClassFields": true,
+        // "module": "AMD",
         "declaration": true,
         "strict": true,
-        "resolveJsonModule": true,
-        "isolatedModules": true,
+        // "resolveJsonModule": true,
+        // "isolatedModules": true,
         "esModuleInterop": true,
-        "outDir": "./lib",
+        // "outDir": "./lib",
+        // "outFile": "./lib/index.js",
         "lib": [
             "ESNext",
             "DOM"
