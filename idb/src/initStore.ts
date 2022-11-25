@@ -9,12 +9,8 @@ import { DbStoreInfo, DEFAULT_KEYPATH, DEFAULT_STORE_NAME } from './config';
 import setupDB, { get, put, remove } from './setupDB';
 import type { InitDB } from './setupDB';
 
-export default function initStore<T extends {} = {}>(
-    key: any,
-    storeInfo?: DbStoreInfo
-) {
-    const { storeName = DEFAULT_STORE_NAME, keyPathOptions = {} } =
-        storeInfo || {};
+export default function initStore<T extends {} = {}>(key: any, storeInfo?: DbStoreInfo) {
+    const { storeName = DEFAULT_STORE_NAME, keyPathOptions = {} } = storeInfo || {};
     const { keyPath = DEFAULT_KEYPATH } = keyPathOptions;
 
     // 获取 store, 检查 db 是否有该 store ，若没有，则创建 store ，需更新数据库
@@ -23,11 +19,7 @@ export default function initStore<T extends {} = {}>(
         return async (mode: IDBTransactionMode = 'readonly') => {
             if (_db) return _db.getStore(storeName, mode);
             return await setupDB().then(async (db) => {
-                if (
-                    db.objectStoreNames.contains(storeName) ||
-                    !storeInfo ||
-                    isCreating
-                ) {
+                if (db.objectStoreNames.contains(storeName) || !storeInfo || isCreating) {
                     return db.getStore(storeName, mode);
                 } else {
                     isCreating = true;

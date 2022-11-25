@@ -1,0 +1,28 @@
+{
+    "name": "@wzdong",
+    "version": "0.0.0",
+    "description": "💡 @wzdong package",
+    "author": "wzdong",
+    "license": "MIT",
+    "scripts": {
+        "build": "tsc",
+        "prepare": "npm run build"
+    },
+    "devDependencies": {
+        "@swc/core": "^1.3.19",
+        "tsup": "^6.5.0",
+        "typescript": "^4.8.3"
+    },
+    "private": true,
+    "workspaces": [
+        "*"
+    ],
+    "keywords": [
+        "wzdong"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/wzdong26/-wzdong"
+    },
+    "bugs": "https://github.com/wzdong26/-wzdong/issues"
+}

@@ -5,10 +5,7 @@ export const DB_NAME = 'MY_APP_INDEXED_DB';
 export const DEFAULT_STORE_NAME = '$IDB_STORE';
 export const DEFAULT_KEYPATH = '$_ID';
 
-export type DbStoreInfo<
-    Name extends string = string,
-    KeyPath extends string = string
-> = {
+export type DbStoreInfo<Name extends string = string, KeyPath extends string = string> = {
     storeName: Name;
     keyPathOptions?: {
         keyPath?: KeyPath;

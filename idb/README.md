@@ -1,14 +1,14 @@
 # @wzdong/idb
 
-<center style="font-size: 20px">
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/idb">
-        <img height="18px" src="https://github.githubassets.com/pinned-octocat.svg" alt="💻"/> Github
-    </a>
+<p align="center" style="font-size: large">
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/idb">🐱 Github</a>
      | 
     <a href="https://github.com/wzdong26/-wzdong/tree/main/idb/md/document.md">📖 Docs</a>
      | 
     <a href="https://github.com/wzdong26/-wzdong/issues">👨‍🔧 Issues</a>
-</center>
+     |
+    <a href="https://github.com/wzdong26/-wzdong/md/version.md">🕙 Version</a>
+</p>
 <p align="right">
     <a href="https://github.com/wzdong26/-wzdong/tree/main/idb/README_zh.md">中文</a>
     - | -
@@ -19,7 +19,7 @@
 
 > If you are not satisfied with the size of localStorage or the data format it supports, try indexedDB. If you find indexedDB cumbersome to use, lets try **`@wzdong/idb`**. It lets you use indexedDB just as easily as localStorage! 😜😜
 
-1. **This is an npm package based on `indexedDB` and the size is only about 30kB.**
+1. **This is an npm package based on `indexedDB` and the size is only about 10 kB.**
 2. **The method of use is very simple, you only need to read, store, and remove data through `Promise.then()` .**
 
 ### 🔨 Installation
@@ -62,7 +62,7 @@ store.removeData(yourData).then(() => console.log('remove success!'));
 
 You can then use indexedDB however you want in your project this way. Isn't this writing very similar to localStorage, yes, it's that simple. It's just that it becomes an implementation of asynchronous promises.
 
-### 🌰 JS Application Example (Form Storage)
+### JS Application Example: Form Storage
 
 https://code.juejin.cn/pen/7166548718001324071
 
@@ -76,7 +76,7 @@ https://code.juejin.cn/pen/7166548718001324071
 
 > Why wrap indexedDB?
 
-    The process of using native indexedDB is complex, including database requests, establishment transactions, and transaction operations. The implementation of simplified encapsulation in formal project code is more efficient and more conducive to project maintenance.
+&emsp;&emsp;The process of using native indexedDB is complex, including database requests, establishment transactions, and transaction operations. The implementation of simplified encapsulation in formal project code is more efficient and more conducive to project maintenance.
 
 ## 🙆‍♂️ Contributor
 

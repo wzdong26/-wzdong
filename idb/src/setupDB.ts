@@ -47,17 +47,13 @@ const addDBFcn = (db: IDBDatabase) => {
     idb.update = (onUpdate) => updateDB(db, onUpdate);
     idb.getStore = (storeName, mode) => getStore(db, storeName, mode);
     // 不建议使用, 会触发版本更新
-    idb.createStore = (storeInfo) =>
-        idb.update((e) => createStore(e, storeInfo));
-    idb.deleteStore = (storeName) =>
-        idb.update((e) => deleteStore(e, storeName));
+    idb.createStore = (storeInfo) => idb.update((e) => createStore(e, storeInfo));
+    idb.deleteStore = (storeName) => idb.update((e) => deleteStore(e, storeName));
     return idb;
 };
 
 // 发送IndexedDB打开请求，并获取到 db 对象
-const openDB = ((
-    openDBOptions: OpenDBOptions
-): ((options?: Partial<OpenDBOptions>) => Promise<InitDB>) => {
+const openDB = ((openDBOptions: OpenDBOptions): ((options?: Partial<OpenDBOptions>) => Promise<InitDB>) => {
     // 初始化 打开数据库请求
     let reqOpenDB: IDBOpenDBRequest | null, _db: InitDB | null;
     return (options) =>
@@ -82,7 +78,7 @@ const openDB = ((
                 _db = addDBFcn(db);
                 reset();
                 resolve(_db); // 数据库对象
-            }
+            };
             reqOpenDB.addEventListener('success', onsuccess);
             const onerror = (evt: Event) => {
                 reset();
@@ -110,10 +106,7 @@ const openDB = ((
 });
 
 // 更新数据库，触发 onupgradeneeded
-const updateDB = (
-    db: IDBDatabase,
-    onUpdate?: (db: InitDB) => void
-): Promise<InitDB> =>
+const updateDB = (db: IDBDatabase, onUpdate?: (db: InitDB) => void): Promise<InitDB> =>
     new Promise((resolve, reject) => {
         let version: number;
         if (db.objectStoreNames.length === 0) {
@@ -149,15 +142,12 @@ const setupDB = (() => {
     ) => {
         if (_db) {
             if (opt) {
-                console.warn(
-                    'Open indexedDB Options is invalid because the db is already opened!'
-                );
+                console.warn('Open indexedDB Options is invalid because the db is already opened!');
             }
             return _db;
         }
         return await openDB({
-            onUpdate: (db) =>
-                createAllStore(db, [...DB_STORES, ...(opt?.stores || [])]),
+            onUpdate: (db) => createAllStore(db, [...DB_STORES, ...(opt?.stores || [])]),
             ...(opt || {}),
         }).then((db) => {
             addDBListener(db);
@@ -180,11 +170,7 @@ export const deleteDB = (name: string = DB_NAME) => {
 // 创建store(ObjectStore)
 const createStore = (
     db: IDBDatabase,
-    {
-        storeName,
-        keyPathOptions: { keyPath = DEFAULT_KEYPATH, autoIncrement } = {},
-        indexList,
-    }: DbStoreInfo
+    { storeName, keyPathOptions: { keyPath = DEFAULT_KEYPATH, autoIncrement } = {}, indexList }: DbStoreInfo
 ) => {
     // `createStore` must be called when the database is `onupgradeneeded`.
     if (db.objectStoreNames.contains(storeName)) return false;
@@ -211,18 +197,12 @@ const deleteStore = (db: IDBDatabase, storeName: string) => {
 };
 
 // 建立事务获取store(ObjectStore)
-const getStore = (
-    db: IDBDatabase,
-    storeName: string,
-    mode: IDBTransactionMode
-) => {
+const getStore = (db: IDBDatabase, storeName: string, mode: IDBTransactionMode) => {
     let tx: IDBTransaction;
     try {
         tx = db.transaction(storeName, mode);
     } catch (err) {
-        throw new Error(
-            `[IndexDB] Store named '${storeName}' cannot be found in the database`
-        );
+        throw new Error(`[IndexDB] Store named '${storeName}' cannot be found in the database`);
     }
     return tx.objectStore(storeName);
 };
@@ -247,10 +227,7 @@ export const put = (store: IDBObjectStore, data: any) =>
 
 // 查
 // 根据 主键 keyPath 查询
-export const get = (
-    store: IDBObjectStore,
-    keyPathValue?: IDBValidKey | IDBKeyRange
-): Promise<any> =>
+export const get = (store: IDBObjectStore, keyPathValue?: IDBValidKey | IDBKeyRange): Promise<any> =>
     new Promise((resolve, reject) => {
         const req = keyPathValue ? store.get(keyPathValue) : store.getAll();
         req.onsuccess = (evt) => {
@@ -269,8 +246,7 @@ export const getByIndex = (
         const req = store.index(indexName).openCursor(indexValue, direction);
         const list: any[] = [];
         req.onsuccess = (evt) => {
-            const cursor: IDBCursorWithValue = (evt.target as IDBRequest)
-                .result;
+            const cursor: IDBCursorWithValue = (evt.target as IDBRequest).result;
             if (cursor) {
                 list.push(cursor.value);
                 cursor.continue();
@@ -283,10 +259,7 @@ export const getByIndex = (
 
 // 删
 // 根据 主键 keyPath 删除
-export const remove = (
-    store: IDBObjectStore,
-    keyPathValue: IDBValidKey | IDBKeyRange
-) =>
+export const remove = (store: IDBObjectStore, keyPathValue: IDBValidKey | IDBKeyRange) =>
     new Promise((resolve, reject) => {
         const req = store.delete(keyPathValue);
         req.onsuccess = (evt) => {
@@ -304,16 +277,13 @@ export const removeByIndex = (
     new Promise((resolve, reject) => {
         const req = store.index(indexName).openCursor(indexValue, direction);
         req.onsuccess = (evt) => {
-            const cursor: IDBCursorWithValue = (evt.target as IDBRequest)
-                .result;
+            const cursor: IDBCursorWithValue = (evt.target as IDBRequest).result;
             if (cursor) {
                 const reqDelete = cursor.delete();
                 reqDelete.onerror = () => {
-                    console.error(
-                        `[IndexDB] Failed to delete the record ${cursor}`
-                    );
+                    console.error(`[IndexDB] Failed to delete the record ${cursor}`);
                 };
-                reqDelete.onsuccess = () => { };
+                reqDelete.onsuccess = () => {};
                 cursor.continue();
             } else {
                 resolve({ delete: 'done' });
