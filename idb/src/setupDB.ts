@@ -128,6 +128,11 @@ const setupDB = (() => {
     const addDBListener = (db: InitDB) => {
         // `addDBListener` must be called when the database is opened.
         db.onerror = (ev) => console.error(ev.target);
+        // 监测到版本更新时关闭数据库以保证版本正常更新，解决多个标签页同时打开的并发问题（红宝书 p770）
+        db.onversionchange = () => {
+            db.close();
+            _db = null;
+        }
         db.onabort = (ev) => {
             _db = null;
         };
