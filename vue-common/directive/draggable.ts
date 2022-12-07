@@ -11,7 +11,7 @@
  *     axes,        移动轴，传参: 'x' | 'y' | undefined, 默认 undefined, 即光标位置; 可选择只沿x轴移动或只沿y轴移动
  *     style,       移动过程中 el 的 style 样式, !important: 不要在移动过程中的样式中设置与位置有关的样式属性，如：position、inset、top、left、right、bottom
  *     className,   移动过程中 el 的 class 样式
- *     setPassive,  设置 touchmove 事件的 passive 属性, 默认 undefined , 阻止 touchmove 默认事件(页面滚动); 若为 true , 不阻止默认事件, 页面可滚动
+ *     setDefault,  设置是否应用 pointermove、touchmove 的默认事件, 默认为 undefined, 即不应用默认事件而触发拖拽移动事件; 设为 true, 则关闭拖拽移动事件, 保证默认事件的正常进行, 如页面滚动、文字拖拽选中等。
  *     onMove,      开始移动时触发的回调
  *     onStop,      停止移动时触发的回调
  * }
@@ -33,7 +33,7 @@ interface BindingValue {
     axes?: 'x' | 'y';
     style?: Partial<CSSStyleDeclaration>;
     className?: string;
-    setPassive?: () => boolean;
+    setDefault?: () => boolean;
     onMove?: OnFn;
     onStop?: OnFn;
 }
@@ -48,7 +48,7 @@ const draggable = (
             axes,
             style,
             className,
-            setPassive,
+            setDefault,
             onMove,
             onStop,
         } = {} as any,
@@ -62,10 +62,10 @@ const draggable = (
         (className
             ? undefined
             : {
-                transform: 'scale(1.5)',
-                filter: 'opacity(75 %)',
-                cursor: 'move',
-            });
+                  transform: 'scale(1.5)',
+                  filter: 'opacity(75 %)',
+                  cursor: 'move',
+              });
 
     // 设置移动时的样式
     const setStyle = (el: HTMLElement, flag?: boolean) => {
@@ -73,10 +73,7 @@ const draggable = (
             Object.entries(style).forEach(([attr, val]: any) => {
                 el.style[attr] = flag ? '' : val;
             });
-        className &&
-            (el.className = flag
-                ? el.className.replace(className, '')
-                : `${el.className} ${className}`);
+        className && (el.className = flag ? el.className.replace(className, '') : `${el.className} ${className}`);
     };
 
     // 根据 origin 和 axes 判断该改变 el.style.inset 的哪个值
@@ -150,13 +147,12 @@ const draggable = (
         const { x, y } = pointerRelativePos;
         const left = clientX - x;
         const top = clientY - y;
-        const { offsetWidth, offsetHeight, innerWidth, innerHeight } =
-            widthHeight;
-        const insetAllStyle = `${top}px ${innerWidth - offsetWidth - left}px ${innerHeight - offsetHeight - top
-            }px ${left}px`.split(' ');
+        const { offsetWidth, offsetHeight, innerWidth, innerHeight } = widthHeight;
+        const insetAllStyle = `${top}px ${innerWidth - offsetWidth - left}px ${
+            innerHeight - offsetHeight - top
+        }px ${left}px`.split(' ');
         if (typeof changeInsetStyleIdx[0] === 'string') {
-            el.style[changeInsetStyleIdx[0] as any] =
-                insetAllStyle[changeInsetStyleIdx[1] as any];
+            el.style[changeInsetStyleIdx[0] as any] = insetAllStyle[changeInsetStyleIdx[1] as any];
         } else {
             changeInsetStyleIdx.forEach((i: any) => {
                 insetStyle[i] = insetAllStyle[i];
@@ -168,15 +164,21 @@ const draggable = (
     // 适用于PC, 移动设备 touch 会不定时触发 pointerleave, 无法用 onpointermove 监听
     const onPointermove = (evt: MouseEvent) => {
         const { clientX, clientY } = evt;
-        setElPos(clientX, clientY);
+        if (!setDefault?.()) {
+            evt.preventDefault();
+            evt.stopPropagation();
+            setElPos(clientX, clientY);
+        }
     };
     // 适用于移动设备
     const onTouchmove = (evt: TouchEvent) => {
-        // 阻止触摸页面滑动
-        !setPassive?.() && evt.preventDefault();
         el.removeEventListener('pointermove', onPointermove);
         const { clientX, clientY } = evt.touches[0];
-        setElPos(clientX, clientY);
+        if (!setDefault?.()) {
+            evt.preventDefault();
+            evt.stopPropagation();
+            setElPos(clientX, clientY);
+        }
     };
 
     // 开始移动
@@ -186,11 +188,14 @@ const draggable = (
         getWidthHeight();
         device !== 'pc' &&
             el.addEventListener('touchmove', onTouchmove, {
-                passive: !!setPassive?.(),
+                passive: !!setDefault?.(),
                 capture: true,
             });
         device !== 'mobile' &&
-            document.addEventListener('pointermove', onPointermove, true);
+            document.addEventListener('pointermove', onPointermove, {
+                passive: !!setDefault?.(),
+                capture: true,
+            });
         timer = setTimeout(() => {
             onMove?.(el);
             setStyle(el);
