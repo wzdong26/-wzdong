@@ -12,15 +12,13 @@
  *     style,       移动过程中 el 的 style 样式, !important: 不要在移动过程中的样式中设置与位置有关的样式属性，如：position、inset、top、left、right、bottom
  *     className,   移动过程中 el 的 class 样式
  *     setDefault,  设置是否应用 pointermove、touchmove 的默认事件, 默认为 undefined, 即不应用默认事件而触发拖拽移动事件; 设为 true, 则关闭拖拽移动事件, 保证默认事件的正常进行, 如页面滚动、文字拖拽选中等。
- *     onMove,      开始移动时触发的回调
- *     onStop,      停止移动时触发的回调
+ *     onMove,      移动时触发的回调, 返回值boolean标识其是否阻止移动, 即若返回为 true, 阻止此次移动。
  * }
  */
 
 import { DirectiveBinding } from 'vue';
 
-type OnFn = (el: HTMLElement) => void;
-enum Origin {
+export enum Origin {
     topLeft,
     bottomLeft,
     bottomRight,
@@ -34,24 +32,13 @@ interface BindingValue {
     style?: Partial<CSSStyleDeclaration>;
     className?: string;
     setDefault?: () => boolean;
-    onMove?: OnFn;
-    onStop?: OnFn;
+    onMove?: (options: [top?: number, right?: number, bottom?: number, left?: number]) => boolean;
 }
 
 const draggable = (
     el: HTMLElement,
     {
-        value: {
-            device,
-            ms = 250,
-            o: origin = Origin['topLeft'],
-            axes,
-            style,
-            className,
-            setDefault,
-            onMove,
-            onStop,
-        } = {} as any,
+        value: { device, ms = 250, o: origin = Origin['topLeft'], axes, style, className, setDefault, onMove } = {} as any,
     }: DirectiveBinding<BindingValue>
 ) => {
     // margin 影响 inset 位置, 目标元素 margin 必须为 0
@@ -62,10 +49,10 @@ const draggable = (
         (className
             ? undefined
             : {
-                transform: 'scale(1.5)',
-                filter: 'opacity(75 %)',
-                cursor: 'move',
-            });
+                  transform: 'scale(1.5)',
+                  filter: 'opacity(75 %)',
+                  cursor: 'move',
+              });
 
     // 设置移动时的样式
     const setStyle = (el: HTMLElement, flag?: boolean) => {
@@ -140,6 +127,7 @@ const draggable = (
         };
     };
     const insetStyle = Array(4).fill('auto');
+    const onMoveOptionsArr: any = Array(4).fill(undefined);
 
     // 设置目标元素位置，以指针为基点
     const setElPos = (clientX: number, clientY: number) => {
@@ -147,15 +135,25 @@ const draggable = (
         const left = clientX - x;
         const top = clientY - y;
         const { offsetWidth, offsetHeight, innerWidth, innerHeight } = widthHeight;
-        const insetAllStyle = `${top}px ${innerWidth - offsetWidth - left}px ${innerHeight - offsetHeight - top
-            }px ${left}px`.split(' ');
+        const insetAllStyle = `${top}px ${innerWidth - offsetWidth - left}px ${
+            innerHeight - offsetHeight - top
+        }px ${left}px`.split(' ');
         if (typeof changeInsetStyleIdx[0] === 'string') {
-            el.style[changeInsetStyleIdx[0] as any] = insetAllStyle[changeInsetStyleIdx[1] as any];
+            if (onMove) {
+                onMoveOptionsArr[changeInsetStyleIdx[1] as any] = parseFloat(insetAllStyle[changeInsetStyleIdx[1] as any]);
+                !onMove(onMoveOptionsArr) &&
+                    (el.style[changeInsetStyleIdx[0] as any] = insetAllStyle[changeInsetStyleIdx[1] as any]);
+            } else {
+                el.style[changeInsetStyleIdx[0] as any] = insetAllStyle[changeInsetStyleIdx[1] as any];
+            }
         } else {
             changeInsetStyleIdx.forEach((i: any) => {
                 insetStyle[i] = insetAllStyle[i];
+                if (onMove) {
+                    onMoveOptionsArr[i] = parseFloat(insetAllStyle[i]);
+                }
             });
-            el.style.inset = insetStyle.join(' ');
+            !onMove?.(onMoveOptionsArr) && (el.style.inset = insetStyle.join(' '));
         }
     };
     // 移动中
@@ -195,7 +193,6 @@ const draggable = (
                 capture: true,
             });
         timer = setTimeout(() => {
-            onMove?.(el);
             setStyle(el);
             // pc端支持长按click事件，因此这里要判断超出 ms 时长即判定为拖拽而非 click
             // 捕获阶段阻止冒泡，中断之后的事件流
@@ -216,7 +213,6 @@ const draggable = (
         clearTimeout(timer);
         document.removeEventListener('pointermove', onPointermove, true);
         el.removeEventListener('touchmove', onTouchmove, true);
-        onStop?.(el);
         setStyle(el, true);
     };
 };
