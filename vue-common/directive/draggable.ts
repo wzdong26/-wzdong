@@ -62,10 +62,10 @@ const draggable = (
         (className
             ? undefined
             : {
-                  transform: 'scale(1.5)',
-                  filter: 'opacity(75 %)',
-                  cursor: 'move',
-              });
+                transform: 'scale(1.5)',
+                filter: 'opacity(75 %)',
+                cursor: 'move',
+            });
 
     // 设置移动时的样式
     const setStyle = (el: HTMLElement, flag?: boolean) => {
@@ -112,7 +112,6 @@ const draggable = (
                 }
                 return [0, 1];
         }
-        return [0, 1];
     })();
 
     let pointerRelativePos: { x: number; y: number },
@@ -148,9 +147,8 @@ const draggable = (
         const left = clientX - x;
         const top = clientY - y;
         const { offsetWidth, offsetHeight, innerWidth, innerHeight } = widthHeight;
-        const insetAllStyle = `${top}px ${innerWidth - offsetWidth - left}px ${
-            innerHeight - offsetHeight - top
-        }px ${left}px`.split(' ');
+        const insetAllStyle = `${top}px ${innerWidth - offsetWidth - left}px ${innerHeight - offsetHeight - top
+            }px ${left}px`.split(' ');
         if (typeof changeInsetStyleIdx[0] === 'string') {
             el.style[changeInsetStyleIdx[0] as any] = insetAllStyle[changeInsetStyleIdx[1] as any];
         } else {
