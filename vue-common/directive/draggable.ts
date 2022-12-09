@@ -5,10 +5,10 @@
  * @param el 目标元素，目标元素必须是支持 inset 布局，建议 position: fixed
  * @param binding 绑定对象
  * {
- *     device,      设备，传参: 'mobile' | 'pc' | undefined
+ *     device,      设备，传参: 'mobile' | 'pc' | undefined, default: undefined, 两者都支持
  *     ms,          延迟时间, default 250. 与 click 事件区分
  *     o,           移动时的相对原点，支持4种, 0: 左上角; 1: 左下角; 2: 右下角; 3: 右上角; 默认为 0: 左上角
- *     axes,        移动轴，传参: 'x' | 'y' | undefined, 默认 undefined, 即光标位置; 可选择只沿x轴移动或只沿y轴移动
+ *     axes,        移动轴，传参: 'x' | 'y' | undefined, 默认 undefined, 即光标位置; 可选择只沿 x 轴移动或只沿 y 轴移动
  *     style,       移动过程中 el 的 style 样式, !important: 不要在移动过程中的样式中设置与位置有关的样式属性，如：position、inset、top、left、right、bottom
  *     className,   移动过程中 el 的 class 样式
  *     setDefault,  设置是否应用 pointermove、touchmove 的默认事件, 默认为 undefined, 即不应用默认事件而触发拖拽移动事件; 设为 true, 则关闭拖拽移动事件, 保证默认事件的正常进行, 如页面滚动、文字拖拽选中等。
@@ -24,6 +24,14 @@ export enum Origin {
     bottomRight,
     topRight,
 }
+
+enum Inset {
+    top,
+    right,
+    bottom,
+    left,
+}
+
 interface BindingValue {
     device?: 'mobile' | 'pc';
     ms?: number;
@@ -60,7 +68,7 @@ const draggable = (
             Object.entries(style).forEach(([attr, val]: any) => {
                 el.style[attr] = flag ? '' : val;
             });
-        className && (el.className = flag ? el.className.replace(className, '') : `${el.className} ${className}`);
+        className && el.classList[flag ? 'remove' : 'add'](className);
     };
 
     // 根据 origin 和 axes 判断该改变 el.style.inset 的哪个值
@@ -69,33 +77,33 @@ const draggable = (
             case Origin['topLeft']:
                 switch (axes) {
                     case 'x':
-                        return ['left', 3];
+                        return [3];
                     case 'y':
-                        return ['top', 0];
+                        return [0];
                 }
                 return [0, 3];
             case Origin['bottomLeft']:
                 switch (axes) {
                     case 'x':
-                        return ['left', 3];
+                        return [3];
                     case 'y':
-                        return ['bottom', 2];
+                        return [2];
                 }
                 return [2, 3];
             case Origin['bottomRight']:
                 switch (axes) {
                     case 'x':
-                        return ['right', 1];
+                        return [1];
                     case 'y':
-                        return ['bottom', 2];
+                        return [2];
                 }
                 return [1, 2];
             case Origin['topRight']:
                 switch (axes) {
                     case 'x':
-                        return ['right', 1];
+                        return [1];
                     case 'y':
-                        return ['top', 0];
+                        return [0];
                 }
                 return [0, 1];
         }
@@ -138,24 +146,20 @@ const draggable = (
         const insetAllStyle = `${top}px ${innerWidth - offsetWidth - left}px ${
             innerHeight - offsetHeight - top
         }px ${left}px`.split(' ');
-        if (typeof changeInsetStyleIdx[0] === 'string') {
-            if (onMove) {
-                onMoveOptionsArr[changeInsetStyleIdx[1] as any] = parseFloat(insetAllStyle[changeInsetStyleIdx[1] as any]);
-                !onMove(onMoveOptionsArr) &&
-                    (el.style[changeInsetStyleIdx[0] as any] = insetAllStyle[changeInsetStyleIdx[1] as any]);
-            } else {
-                el.style[changeInsetStyleIdx[0] as any] = insetAllStyle[changeInsetStyleIdx[1] as any];
-            }
+        if (changeInsetStyleIdx.length === 1) {
+            const idx = changeInsetStyleIdx[0],
+                insetStr = Inset[idx];
+            !!onMove && (onMoveOptionsArr[idx] = parseFloat(insetAllStyle[idx]));
+            !onMove?.(onMoveOptionsArr) && (el.style[insetStr as any] = insetAllStyle[idx]);
         } else {
-            changeInsetStyleIdx.forEach((i: any) => {
+            changeInsetStyleIdx.forEach((i) => {
                 insetStyle[i] = insetAllStyle[i];
-                if (onMove) {
-                    onMoveOptionsArr[i] = parseFloat(insetAllStyle[i]);
-                }
+                !!onMove && (onMoveOptionsArr[i] = parseFloat(insetAllStyle[i]));
             });
             !onMove?.(onMoveOptionsArr) && (el.style.inset = insetStyle.join(' '));
         }
     };
+    
     // 移动中
     // 适用于PC, 移动设备 touch 会不定时触发 pointerleave, 无法用 onpointermove 监听
     const onPointermove = (evt: MouseEvent) => {
@@ -183,7 +187,7 @@ const draggable = (
         recordPointerPos(clientX, clientY);
         getWidthHeight();
         device !== 'pc' &&
-            el.addEventListener('touchmove', onTouchmove, {
+            document.addEventListener('touchmove', onTouchmove, {
                 passive: !!setDefault?.(),
                 capture: true,
             });
@@ -204,7 +208,7 @@ const draggable = (
                 { capture: true, once: true }
             );
         }, ms);
-        el.addEventListener('pointerup', stopMove, { once: true });
+        document.addEventListener('pointerup', stopMove, { once: true });
     };
     el.addEventListener('pointerdown', onPointerdown, true);
 
@@ -212,7 +216,7 @@ const draggable = (
     const stopMove = () => {
         clearTimeout(timer);
         document.removeEventListener('pointermove', onPointermove, true);
-        el.removeEventListener('touchmove', onTouchmove, true);
+        document.removeEventListener('touchmove', onTouchmove, true);
         setStyle(el, true);
     };
 };
