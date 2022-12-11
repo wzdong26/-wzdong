@@ -6,22 +6,19 @@
  * @author wzdong
  */
 
-
 const INIT_MS = 800;
 
 // 防抖
-export const debounce = <T extends any[], R extends any>(
-    handler: (...params: T) => R,
-    ms: number = INIT_MS
-) => {
+export const debounce = <T extends any[], R extends any>(handler: (...params: T) => R, ms: number = INIT_MS) => {
     let timer: any;
-    return (...params: T) => new Promise((resolve, reject) => {
-        if (timer) {
-            clearTimeout(timer);
-            timer = null;
-        }
-        timer = setTimeout(() => resolve(handler(...params)), ms);
-    });
+    return (...params: T) =>
+        new Promise((resolve, reject) => {
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+            timer = setTimeout(() => resolve(handler(...params)), ms);
+        });
 };
 
 // 节流
@@ -64,9 +61,8 @@ export const throttle = <T extends any[]>(
     }
 };
 
-
 //  --------------------- test ------------------
-(() => {
+() => {
     const btn = document.createElement('button');
     btn.innerText = 'test';
     btn.style.position = 'fixed';
@@ -80,4 +76,4 @@ export const throttle = <T extends any[]>(
         throttleFn();
     };
     document.body.appendChild(btn);
-});
+};
