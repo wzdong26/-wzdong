@@ -32,6 +32,8 @@ enum Inset {
     left,
 }
 
+type InsetTurtle = [top?: number, right?: number, bottom?: number, left?: number];
+
 interface BindingValue {
     device?: 'mobile' | 'pc';
     ms?: number;
@@ -39,8 +41,8 @@ interface BindingValue {
     axes?: 'x' | 'y';
     style?: Partial<CSSStyleDeclaration>;
     className?: string;
-    setDefault?: () => boolean;
-    onMove?: (options: [top?: number, right?: number, bottom?: number, left?: number]) => boolean;
+    setDefault?: (pointer?: { clientX: number; clientY: number }) => boolean;
+    onMove?: (inset: InsetTurtle, oldInset: InsetTurtle) => boolean;
 }
 
 const draggable = (
@@ -110,61 +112,58 @@ const draggable = (
     })();
 
     let pointerRelativePos: { x: number; y: number },
+        // 获取元素宽高以及视窗宽高
         widthHeight: {
-            offsetWidth: number;
-            offsetHeight: number;
+            width: number;
+            height: number;
             innerWidth: number;
             innerHeight: number;
         },
-        timer: number;
+        timer: any;
 
-    // 获取元素宽高以及视窗宽高
-    const getWidthHeight = () => {
-        const { offsetWidth, offsetHeight } = el;
-        const { innerWidth, innerHeight } = window;
-        widthHeight = { offsetWidth, offsetHeight, innerWidth, innerHeight };
-    };
-    getWidthHeight();
-
+    // 元素的 style.inset
+    let insetStyle: InsetTurtle;
     // 记录指针相对元素位置
     const recordPointerPos = (clientX: number, clientY: number) => {
-        const { x, y } = el.getBoundingClientRect();
+        const { top, left, width, height } = el.getBoundingClientRect();
+        const { innerWidth, innerHeight } = window;
+        widthHeight = { width, height, innerWidth, innerHeight };
+        insetStyle = [top, innerWidth - width - left, innerHeight - height - top, left];
         pointerRelativePos = {
-            x: clientX - x,
-            y: clientY - y,
+            x: clientX - left,
+            y: clientY - top,
         };
     };
-    const insetStyle = Array(4).fill('auto');
-    const onMoveOptionsArr: any = Array(4).fill(undefined);
 
     // 设置目标元素位置，以指针为基点
     const setElPos = (clientX: number, clientY: number) => {
         const { x, y } = pointerRelativePos;
         const left = clientX - x;
         const top = clientY - y;
-        const { offsetWidth, offsetHeight, innerWidth, innerHeight } = widthHeight;
-        const insetAllStyle = `${top}px ${innerWidth - offsetWidth - left}px ${
-            innerHeight - offsetHeight - top
-        }px ${left}px`.split(' ');
+        const { width, height, innerWidth, innerHeight } = widthHeight;
+        const insetAllArr = [top, innerWidth - width - left, innerHeight - height - top, left];
+        const oldInset = [...insetStyle] as InsetTurtle;
+        insetStyle.fill(undefined);
         if (changeInsetStyleIdx.length === 1) {
             const idx = changeInsetStyleIdx[0],
                 insetStr = Inset[idx];
-            !!onMove && (onMoveOptionsArr[idx] = parseFloat(insetAllStyle[idx]));
-            !onMove?.(onMoveOptionsArr) && (el.style[insetStr as any] = insetAllStyle[idx]);
+            insetStyle[idx] = insetAllArr[idx];
+            !onMove?.(insetStyle, oldInset) && (el.style[insetStr as any] = `${insetAllArr[idx]}px`);
         } else {
+            insetStyle.fill(NaN);
             changeInsetStyleIdx.forEach((i) => {
-                insetStyle[i] = insetAllStyle[i];
-                !!onMove && (onMoveOptionsArr[i] = parseFloat(insetAllStyle[i]));
+                insetStyle[i] = insetAllArr[i];
             });
-            !onMove?.(onMoveOptionsArr) && (el.style.inset = insetStyle.join(' '));
+            !onMove?.(insetStyle, oldInset) &&
+                (el.style.inset = insetStyle.map((e) => (Number.isNaN(e) ? 'auto' : `${e}px`)).join(' '));
         }
     };
-    
+
     // 移动中
     // 适用于PC, 移动设备 touch 会不定时触发 pointerleave, 无法用 onpointermove 监听
     const onPointermove = (evt: MouseEvent) => {
         const { clientX, clientY } = evt;
-        if (!setDefault?.()) {
+        if (!setDefault?.({ clientX, clientY })) {
             evt.preventDefault();
             evt.stopPropagation();
             setElPos(clientX, clientY);
@@ -174,7 +173,7 @@ const draggable = (
     const onTouchmove = (evt: TouchEvent) => {
         el.removeEventListener('pointermove', onPointermove);
         const { clientX, clientY } = evt.touches[0];
-        if (!setDefault?.()) {
+        if (!setDefault?.({ clientX, clientY })) {
             evt.preventDefault();
             evt.stopPropagation();
             setElPos(clientX, clientY);
@@ -185,7 +184,6 @@ const draggable = (
     const onPointerdown = (evt: PointerEvent) => {
         const { clientX, clientY } = evt;
         recordPointerPos(clientX, clientY);
-        getWidthHeight();
         device !== 'pc' &&
             document.addEventListener('touchmove', onTouchmove, {
                 passive: !!setDefault?.(),
