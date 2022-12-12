@@ -2,5 +2,11 @@
     "cSpell.words": [
         "tsup",
         "wzdong"
-    ]
+    ],
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[vue]": {
+        "editor.defaultFormatter": "Vue.volar"
+    },
 }

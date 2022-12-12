@@ -40,7 +40,7 @@ interface BindingValue {
     ms?: number;
     o?: Origin;
     axes?: 'x' | 'y';
-    setDefault?: (evt?: PointerEvent) => boolean;
+    setDefault?: (evt?: { clientX: number; clientY: number }, flag?: boolean) => boolean;
     onMoving?: (inset: InsetTurtle, oldInset: InsetTurtle) => boolean;
     onBeforeMove?: (inset: InsetTurtle) => void;
     onMoved?: (inset: InsetTurtle) => void;
@@ -152,8 +152,9 @@ const draggable = (
     let enableMove = false;
     // 移动中
     // 适用于PC, 移动设备 touch 会不定时触发 pointerleave, 无法用 onpointermove 监听
-    const onPointermove = (evt: MouseEvent) => {
+    const onPointermove = (evt: PointerEvent) => {
         const { clientX, clientY } = evt;
+        if (!!setDefault?.({ clientX, clientY }, false)) return;
         evt.preventDefault();
         evt.stopPropagation();
         enableMove && setElPos(clientX, clientY);
@@ -162,6 +163,7 @@ const draggable = (
     const onTouchmove = (evt: TouchEvent) => {
         el.removeEventListener('pointermove', onPointermove);
         const { clientX, clientY } = evt.touches[0];
+        if (!!setDefault?.({ clientX, clientY }, false)) return;
         evt.preventDefault();
         evt.stopPropagation();
         enableMove && setElPos(clientX, clientY);
@@ -171,16 +173,15 @@ const draggable = (
     const onPointerdown = (evt: PointerEvent) => {
         setStyle(el, 'moved', true);
         const { clientX, clientY } = evt;
-        const setDefaultVal = !!setDefault?.(evt);
-        if (setDefaultVal) return;
+        if (!!setDefault?.({ clientX, clientY }, true)) return;
         device !== 'pc' &&
             document.addEventListener('touchmove', onTouchmove, {
-                passive: setDefaultVal,
+                passive: false,
                 capture: true,
             });
         device !== 'mobile' &&
             document.addEventListener('pointermove', onPointermove, {
-                passive: setDefaultVal,
+                passive: false,
                 capture: true,
             });
         document.addEventListener('pointerup', stopMove, { once: true });

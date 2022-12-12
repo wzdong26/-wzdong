@@ -8,9 +8,7 @@
 
 import { ObjectDirective } from 'vue';
 
-interface BindingValue {
-    (evt: MouseEvent): void;
-}
+type BindingValue = null | ((evt: MouseEvent) => void);
 
 let onclickEl: (evt: MouseEvent) => void;
 let onclick: (evt: MouseEvent) => void;
@@ -26,7 +24,7 @@ const clickAway: ObjectDirective<HTMLElement, BindingValue> = {
                 clickEl = false;
                 return;
             }
-            handler(ev);
+            handler && handler(ev);
         };
         el.addEventListener('click', onclickEl);
         document.addEventListener('click', onclick);
