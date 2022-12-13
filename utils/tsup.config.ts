@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig((options) => ({
-    entry: ['src/*'],
+    entry: ['src/**/**'],
     format: ['cjs'],
     outDir: './lib',
     outExtension({ format }) {
@@ -10,7 +10,7 @@ export default defineConfig((options) => ({
         };
     },
     globalName: 'utils',
-    splitting: false,
+    splitting: true,
     clean: true,
     target: ['es6'],
     minify: !options.watch,
