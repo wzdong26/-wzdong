@@ -4,7 +4,7 @@
  * @description
  * 1. 防抖{@link debounce}: 触发间隔小于设定时间将函数挂起不执行，一旦触发间隔大于设定时间将执行函数。
  * 2. 节流{@link throttle}: 触发间隔小于设定时间会在每设定时间间隔内只执行一次。
- * 
+ *
  * @export throttle
  * @param handler 执行函数
  * @param ms 执行间隔时间，若未指定则使用动画帧节流（即每帧执行一次）
@@ -14,43 +14,39 @@
 const INIT_MS = 800;
 
 // 防抖
-export const debounce = <T extends any[], R extends any>(
-    handler: (...params: T) => R,
-    ms: number = INIT_MS
-) => {
+export const debounce = <T extends any[], R extends any>(handler: (...params: T) => R, ms: number = INIT_MS) => {
     let timer: any;
-    return (...params: T) => new Promise<R>((resolve) => {
-        if (timer) {
-            clearTimeout(timer);
-            timer = null;
-        }
-        timer = setTimeout(() => resolve(handler(...params)), ms);
-    });
+    return (...params: T) =>
+        new Promise<R>((resolve) => {
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+            timer = setTimeout(() => resolve(handler(...params)), ms);
+        });
 };
 
 // 节流
-export const throttle = <T extends any[]>(
-    handler: (...params: T) => void,
-    ms?: number
-) => {
+export const throttle = <T extends any[]>(handler: (...params: T) => void, ms?: number) => {
     let flag: boolean = true;
     // 1. animationFrameThrottle
-    if (!ms) return (...params: T) => {
-        if (flag) {
-            flag = false;
-            requestAnimationFrame(() => {
-                flag = true;
-                handler(...params)
-            })
-        }
-    }
+    if (!ms)
+        return (...params: T) => {
+            if (flag) {
+                flag = false;
+                requestAnimationFrame(() => {
+                    flag = true;
+                    handler(...params);
+                });
+            }
+        };
     // 2. setTimeoutThrottle
     const setToLastTime = debounce((params: T, flag: boolean) => {
-        !flag && handler(...params)
-    }, ms)
+        !flag && handler(...params);
+    }, ms);
     return (...params: T) => {
         // 最后一次触发若没有立即执行则在 ms 后执行
-        setToLastTime(params, flag)
+        setToLastTime(params, flag);
         if (flag) {
             // 事件第一次触发立即执行，之后每隔 ms 执行
             handler(...params);
@@ -62,7 +58,6 @@ export const throttle = <T extends any[]>(
         }
     };
 };
-
 
 //  --------------------- test ------------------
 (() => {
@@ -80,9 +75,9 @@ export const throttle = <T extends any[]>(
     };
     document.body.appendChild(btn);
     const ti = setInterval(() => {
-        btn.click()
-    }, 100)
+        btn.click();
+    }, 100);
     setTimeout(() => {
-        clearInterval(ti)
+        clearInterval(ti);
     }, 2950);
 });
