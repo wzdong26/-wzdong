@@ -1,19 +1,18 @@
 /**
  * @title debounce & throttle
  * @author wzdong
- * @description
- * 1. 防抖{@link debounce}: 触发间隔小于设定时间将函数挂起不执行，一旦触发间隔大于设定时间将执行函数。
- * 2. 节流{@link throttle}: 触发间隔小于设定时间会在每设定时间间隔内只执行一次。
- *
- * @export throttle
- * @param handler 执行函数
- * @param ms 执行间隔时间，若未指定则使用动画帧节流（即每帧执行一次）
- * @description 连续事件触发时，第一次是立即执行函数，往后每隔 ms 执行一次，最后一次事件触发若刚好卡在 ms 则立即执行，若没有则在此事件触发 ms 后执行。
+ * @export {@link debounce}
+ * @export {@link throttle}
  */
 
 const INIT_MS = 800;
 
-// 防抖
+/**
+ * debounce: 防抖 - 触发间隔小于设定时间将函数挂起不执行，一旦触发间隔大于设定时间将执行函数
+ * @param handler (...params: T) => R 需要执行的回调函数
+ * @param ms 设定时间间隔，一旦触发间隔大于该值将执行函数
+ * @returns (...params: T) => Promise<R>
+ */
 export const debounce = <T extends any[], R extends any>(handler: (...params: T) => R, ms: number = INIT_MS) => {
     let timer: any;
     return (...params: T) =>
@@ -26,7 +25,13 @@ export const debounce = <T extends any[], R extends any>(handler: (...params: T)
         });
 };
 
-// 节流
+/**
+ * throttle: 节流 - 触发间隔小于设定时间会在每设定时间间隔内只执行一次
+ * @description 连续事件触发时，第一次是立即执行函数，往后每隔 ms 执行一次，最后一次事件触发若刚好卡在 ms 则立即执行，若没有则在此事件触发 ms 后执行。
+ * @param handler (...params: T) => void 需要执行的回调函数
+ * @param ms 执行间隔时间，若未指定则使用动画帧节流（即每帧执行一次）
+ * @returns (...params: T) => void
+ */
 export const throttle = <T extends any[]>(handler: (...params: T) => void, ms?: number) => {
     let flag: boolean = true;
     // 1. animationFrameThrottle
@@ -60,7 +65,7 @@ export const throttle = <T extends any[]>(handler: (...params: T) => void, ms?: 
 };
 
 //  --------------------- test ------------------
-(() => {
+() => {
     const btn = document.createElement('button');
     btn.innerText = 'test';
     btn.style.position = 'fixed';
@@ -80,4 +85,4 @@ export const throttle = <T extends any[]>(handler: (...params: T) => void, ms?: 
     setTimeout(() => {
         clearInterval(ti);
     }, 2950);
-});
+};
