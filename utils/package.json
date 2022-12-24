@@ -2,11 +2,12 @@
     "name": "@wzdong/utils",
     "version": "0.0.1",
     "description": "💡 Utils",
-    "main": "lib/index.js",
+    "main": "lib/index.cjs",
     "author": "wzdong",
     "license": "MIT",
     "files": [
-        "lib/*.js",
+        "lib/*.cjs",
+        "lib/index.min.js",
         "lib/*.d.ts",
         "README.md"
     ],

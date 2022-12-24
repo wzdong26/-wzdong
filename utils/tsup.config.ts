@@ -2,12 +2,17 @@ import { defineConfig } from 'tsup';
 
 export default defineConfig((options) => ({
     entry: ['src/**/**'],
-    format: ['cjs'],
+    format: ['cjs', 'iife'],
     outDir: './lib',
     outExtension({ format }) {
-        return {
-            js: `${format === 'iife' ? '.min' : ''}.js`,
-        };
+        switch(format) {
+            case 'iife':
+                return {js: '.min.js'}
+            case 'cjs':
+                return {js: '.cjs'}
+            case 'esm':
+                return {js: '.mjs'}
+        }
     },
     globalName: 'utils',
     splitting: true,

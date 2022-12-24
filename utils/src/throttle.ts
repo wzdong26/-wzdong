@@ -1,8 +1,6 @@
 /**
- * @title debounce & throttle
+ * @title throttle
  * @author wzdong
- * @export debounce {@link debounce}
- * @export throttle {@link throttle}
  */
 
 import { debounce } from './debounce';

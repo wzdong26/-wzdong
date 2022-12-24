@@ -1,5 +1,5 @@
 /**
- * @title EventListener
+ * @title eventEmitter
  * @author wzdong
  * @description 事件监听器, 用于需要监听自定义事件的类继承或挂载其成员方法 on\off\emit , 或需要监听自定义事件的对象挂载 on\off\emit 方法
  */
