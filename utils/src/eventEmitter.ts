@@ -5,7 +5,7 @@
  */
 
 /**
- * EventListener 事件监听器
+ * eventEmitter 事件派发器
  * @returns
  * @property {@link emit} 派发事件
  * @property {@link on} 添加事件
@@ -13,7 +13,7 @@
  * @property {@link once} 单次事件
  * @property {@link clear} 清除事件
  */
-export function EventListener<EvtName extends string | number | symbol, Evt extends any[] = any[]>() {
+export function eventEmitter<EvtName extends string | number | symbol, Evt extends any[] = any[]>() {
     const _evtHooksRecord = {} as Record<EvtName, Array<(...evt: Evt) => void>>;
     const _findEvtHooks = (evtName: EvtName) => {
         _evtHooksRecord[evtName] = _evtHooksRecord[evtName] || [];

@@ -1,6 +1,6 @@
 {
     "name": "@wzdong/utils",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "description": "💡 Utils",
     "main": "lib/index.js",
     "author": "wzdong",
