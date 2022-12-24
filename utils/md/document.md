@@ -27,7 +27,8 @@ npm i @wzdong/utils -S
 ```
 
 ## 1. debounce & throttle
-
+- Code Example:
+[@wzdong/utils--debounce&throttle](https://code.juejin.cn/pen/7180649740986646589) 
 ```typescript
 import { debounce, throttle } from '@wzdong/utils';
 
@@ -50,6 +51,7 @@ const throttleFn = throttle(() => {
 btn.addEventListener('click', () => {
     console.log(`Click ${++clickTime} times!`);
     debounceFn();
+    throttleFn();
 });
 ```
 
