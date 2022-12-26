@@ -2,17 +2,18 @@
     "name": "@wzdong/utils",
     "version": "0.0.2",
     "description": "💡 Utils",
-    "main": "lib/index.cjs",
     "author": "wzdong",
     "license": "MIT",
+    "main": "lib/index.js",
+    "typings": "lib/index.d.ts",
+    "jsdelivr": "dist/index.min.js",
     "files": [
-        "lib/*.cjs",
-        "lib/index.min.js",
-        "lib/*.d.ts",
+        "lib",
+        "lib",
         "README.md"
     ],
     "scripts": {
-        "build": "tsup",
+        "build": "tsup && tsup --minify",
         "dev": "tsup --watch",
         "prepare": "pnpm build"
     },
