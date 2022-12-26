@@ -17,7 +17,7 @@ npm i @wzdong/utils -S
 -   CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@wzdong/utils@x.x.x/lib/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@wzdong/utils@x.x.x/dist/index.min.js"></script>
 
 <script>
     // The global variable 'utils' introduced by the cdn contains the functions you need.
@@ -57,12 +57,12 @@ btn.addEventListener('click', () => {
 });
 ```
 
-## 2. eventEmitter
+## 2. eventListener
 
 ```typescript
-import { eventEmitter } from '@wzdong/utils';
+import { eventListener } from '@wzdong/utils';
 
-const emitter = eventEmitter<'onInterval', [data: number]>();
+const emitter = eventListener<'onInterval', [data: number]>();
 let intervalTime = 0;
 setInterval(() => {
     emitter.emit('onInterval', ++intervalTime);
