@@ -1,7 +1,14 @@
 ## Version History
 
+### v0.0.3 - ⏱2022.12.26
+
+-   _以下调整不影响原来版本功能使用_
+-   调整 build 目录结构
+-   `package.json` add `"typings": "lib/index.d.ts"`
+
 ### v0.0.2 - ⏱2022.12.26
-- 修复 debounce / (eventEmitter ->) eventListener / getUnique / throttle 函数 this 指向问题
+
+-   修复 debounce / (eventEmitter ->) eventListener / getUnique / throttle 函数 this 指向问题
 
 ### v0.0.1 - ⏱2022.12.24
 
