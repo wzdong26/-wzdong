@@ -17,7 +17,7 @@ npm i @wzdong/idb -S
 -   CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@wzdong/idb@x.x.x/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@wzdong/idb@1.1.7"></script>
 
 <script>
     // CDN 引入的全局变量`idb`中包含你需要的函数
