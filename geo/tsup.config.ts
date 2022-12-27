@@ -6,7 +6,7 @@
 import { defineConfig } from 'tsup';
 
 // iife 全局变量名
-const globalName = 'common';
+const globalName = 'geo';
 
 export default defineConfig((options) => {
     const { minify, watch } = options;

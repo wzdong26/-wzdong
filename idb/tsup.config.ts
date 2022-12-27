@@ -1,15 +1,23 @@
+/**
+ * @title tsup config
+ * @author wzdong
+ */
+
 import { defineConfig } from 'tsup';
+
+// iife 全局变量名
+const globalName = 'idb';
 
 export default defineConfig((options) => {
     const { minify, watch } = options;
     return {
-        entry: [`./src/${minify ? 'index.ts' : '*'}`],
-        outDir: `./${minify ? 'dist' : 'lib'}`,
+        entry: [minify ? 'src/index.ts' : 'src'],
+        outDir: minify ? 'dist' : 'lib',
         format: minify ? ['cjs', 'iife'] : ['cjs'],
-        outExtension({ format, options }) {
+        globalName,
+        outExtension({ format }) {
             switch (format) {
                 case 'iife':
-                    options.globalName = 'utils';
                     return { js: '.min.js' };
                 case 'cjs':
                     return { js: '.js' };
@@ -22,6 +30,6 @@ export default defineConfig((options) => {
         target: ['es6'],
         treeshake: true,
         sourcemap: minify,
-        dts: !watch && !minify,
+        dts: !watch && !minify && { resolve: false },
     };
 });
