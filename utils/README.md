@@ -30,7 +30,7 @@ npm i @wzdong/utils -S
 -   CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@wzdong/utils@x.x.x/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@wzdong/utils@0.0.5"></script>
 ```
 
 ## 🙆‍♂️ Contributor

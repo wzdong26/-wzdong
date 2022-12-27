@@ -1,5 +1,9 @@
 ## Version History
 
+### v0.0.5 - ⏱2022.12.26
+
+-   eventListener 函数 return 增加 getCb 和 getCbsNum
+
 ### v0.0.4 / 0.0.3 - ⏱2022.12.26
 
 -   _以下调整不影响原来版本功能使用_
