@@ -2,16 +2,18 @@
     "name": "@wzdong/common",
     "version": "0.0.0",
     "description": "💡 Common",
-    "main": "lib/index.js",
     "author": "wzdong",
     "license": "MIT",
+    "main": "lib/index.js",
+    "typings": "lib/index.d.ts",
+    "jsdelivr": "dist/index.min.js",
     "files": [
-        "lib/*.js",
-        "lib/*.d.ts",
+        "lib",
+        "dist",
         "README.md"
     ],
     "scripts": {
-        "build": "tsup",
+        "build": "tsup && tsup --minify",
         "dev": "tsup --watch",
         "prepare": "pnpm build"
     },

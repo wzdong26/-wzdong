@@ -3,7 +3,7 @@
 <p align="right">
     <i>中文</i> 
     - | -
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/idb/md/document.md">EN</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/idb/md/doc.md">EN</a>
 </p>
 
 ## 🔨 安装
@@ -17,7 +17,7 @@ npm i @wzdong/idb -S
 -   CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@wzdong/idb@x.x.x/lib/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@wzdong/idb@x.x.x/dist/index.min.js"></script>
 
 <script>
     // CDN 引入的全局变量`idb`中包含你需要的函数

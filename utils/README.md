@@ -3,7 +3,7 @@
 <p align="center" style="font-size: large">
     <a href="https://github.com/wzdong26/-wzdong/tree/main/utils">🐱 Github</a>
      | 
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/utils/md/document.md">📖 Docs</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/utils/md/doc.md">📖 Docs</a>
      | 
     <a href="https://github.com/wzdong26/-wzdong/issues">👨‍🔧 Issues</a>
      |
@@ -30,7 +30,7 @@ npm i @wzdong/utils -S
 -   CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@wzdong/utils@x.x.x/lib/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@wzdong/utils@x.x.x/dist/index.min.js"></script>
 ```
 
 ## 🙆‍♂️ Contributor

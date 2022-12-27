@@ -4,6 +4,11 @@
  * @description 事件监听器, 用于需要监听自定义事件的类继承或挂载其成员方法 on\off\emit , 或需要监听自定义事件的对象挂载 on\off\emit 方法
  */
 
+interface GetEventCb<EvtName, Evt extends any[], T> {
+    (evtName: EvtName, idx: number): undefined | ((this: T, ...evt: Evt) => void);
+    (evtName: EvtName, listener: (this: T, ...evt: Evt) => void): number;
+}
+
 /**
  * eventListener 事件派发器
  * @returns
@@ -12,6 +17,8 @@
  * @property {@link off} 移除事件
  * @property {@link once} 单次事件
  * @property {@link clear} 清除事件
+ * @property {@link getCb} 获取指定事件绑定的函数索引或函数体本身
+ * @property {@link getCbsNum} 获取事件绑定的 cb 个数
  */
 export function eventListener<EvtName extends string | number | symbol, Evt extends any[] = any[], T = any>(this: T) {
     const _evtHooksRecord = {} as Record<EvtName, Array<(...evt: Evt) => void>>;
@@ -19,6 +26,16 @@ export function eventListener<EvtName extends string | number | symbol, Evt exte
         _evtHooksRecord[evtName] ||= [];
         return _evtHooksRecord[evtName];
     };
+    // 获取事件处理函数索引或函数体本身，若传索引则返回函数体本身，反之返回索引
+    const getCb = ((evtName, p) => {
+        if (typeof p === 'number') {
+            return _findEvtHooks(evtName)[p];
+        } else {
+            return _findEvtHooks(evtName).indexOf(p);
+        }
+    }) as GetEventCb<EvtName, Evt, T>;
+    // 获取事件绑定的 cb 个数
+    const getCbsNum = (evtName: EvtName) => _findEvtHooks(evtName).length;
     // 派发事件，类似于 dispatchEvent
     const emit = (evtName: EvtName, ...evt: Evt) => {
         for (const cbk of _findEvtHooks(evtName)) {
@@ -52,5 +69,7 @@ export function eventListener<EvtName extends string | number | symbol, Evt exte
         once,
         emit,
         clear,
+        getCb,
+        getCbsNum,
     };
 }

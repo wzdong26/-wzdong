@@ -3,7 +3,7 @@
 <p align="center" style="font-size: large">
     <a href="https://github.com/wzdong26/-wzdong/tree/main/idb">🐱 Github</a>
      | 
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/idb/md/document_zh.md">📖 文档</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/idb/md/doc_zh.md">📖 文档</a>
      | 
     <a href="https://github.com/wzdong26/-wzdong/issues">👨‍🔧 Issues</a>
      |
@@ -33,7 +33,7 @@ npm i @wzdong/idb -S
 -   CDN 脚本引入
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@wzdong/idb@x.x.x/lib/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@wzdong/idb@x.x.x/dist/index.min.js"></script>
 ```
 
 ## 🌰 示例

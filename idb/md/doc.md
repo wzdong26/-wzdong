@@ -1,7 +1,7 @@
 # 📖 `@wzdong/idb` Documentation
 
 <p align="right">
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/idb/md/document_zh.md">中文</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/idb/md/doc_zh.md">中文</a>
     - | -
     <i>EN</i> 
 </p>
@@ -17,7 +17,7 @@ npm i @wzdong/idb -S
 -   CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@wzdong/idb@x.x.x/lib/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@wzdong/idb@x.x.x/dist/index.min.js"></script>
 
 <script>
     // The global variable 'idb' introduced by the cdn contains the functions you need.
