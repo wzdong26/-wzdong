@@ -1,6 +1,10 @@
 ## Version History
 
-### v0.0.5 - ⏱2022.12.26
+### v0.0.6 - ⏱2022.12.28
+
+-   在 getUnique 和 getSingle 基础上添加了 newUnique 和 newSingle, 传入构造函数
+
+### v0.0.5 - ⏱2022.12.27
 
 -   eventListener 函数 return 增加 getCb 和 getCbsNum
 

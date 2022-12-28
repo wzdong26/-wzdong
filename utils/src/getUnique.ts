@@ -67,7 +67,7 @@ export const getSingle = <P extends any[], R extends Exclude<NonNullable<any>, v
 };
 
 /**
- * getSingle: 将需要 key 传入的 {@link getUnique} 生成的方法变为不需要 key的方法
+ * newSingle: 将需要 key 传入的 {@link getUnique} 生成的方法变为不需要 key的方法
  * @param newFn 创建对象的工厂函数
  * ---
  * @returns function (...p: P) => R
