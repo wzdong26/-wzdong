@@ -16,10 +16,7 @@
  * @param p 工厂函数 fn 的原始入参
  * @return R 工厂函数 fn 返回的对象
  */
-export const getUnique = <K extends any, P extends any[], R extends Exclude<NonNullable<any>, void>>(
-    fn: (...p: P) => R,
-    set?: (key: K, rst: R) => void
-) => {
+export const getUnique = <K, P extends any[], R>(fn: (...p: P) => R, set?: (key: K, rst: R) => void) => {
     const results = new Map<K, R>();
     return function <T = any>(this: T, key: K, ...p: P) {
         let rst = results.get(key);
@@ -45,10 +42,8 @@ export const getUnique = <K extends any, P extends any[], R extends Exclude<NonN
  * @param p 构造函数 newFn 的原始入参
  * @return R 构造函数 newFn 返回的对象
  */
-export const newUnique = <K extends any, P extends any[], R extends Exclude<any, undefined | null | void>>(
-    newFn: new (...p: P) => R,
-    set?: (key: K, rst: R) => void
-) => getUnique<K, P, R>((...p) => new newFn(...p), set);
+export const newUnique = <K, P extends any[], R>(newFn: new (...p: P) => R, set?: (key: K, rst: R) => void) =>
+    getUnique<K, P, R>((...p) => new newFn(...p), set);
 
 /**
  * getSingle: 将需要 key 传入的 {@link getUnique} 生成的方法变为不需要 key的方法
@@ -58,7 +53,7 @@ export const newUnique = <K extends any, P extends any[], R extends Exclude<any,
  * @param p 工厂函数 fn 的原始入参
  * @return R 工厂函数 fn 返回的对象
  */
-export const getSingle = <P extends any[], R extends Exclude<NonNullable<any>, void>>(fn: (...p: P) => R) => {
+export const getSingle = <P extends any[], R>(fn: (...p: P) => R) => {
     const key = Symbol();
     const uniFn = getUnique(fn);
     return function <T = any>(this: T, ...p: P) {
@@ -74,5 +69,4 @@ export const getSingle = <P extends any[], R extends Exclude<NonNullable<any>, v
  * @param p 构造函数 newFn 的原始入参
  * @return R 构造函数 newFn 返回的对象
  */
-export const newSingle = <P extends any[], R extends Exclude<any, undefined | null | void>>(newFn: new (...p: P) => R) =>
-    getSingle<P, R>((...p) => new newFn(...p));
+export const newSingle = <P extends any[], R>(newFn: new (...p: P) => R) => getSingle<P, R>((...p) => new newFn(...p));
