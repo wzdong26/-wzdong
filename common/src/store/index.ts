@@ -1,2 +1,2 @@
-export * as idb from './idb';
-export * as storage from './storage';
+export * from './idb';
+export * from './storage';

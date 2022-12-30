@@ -1,6 +1,6 @@
 /**
  * @title idb
  * @author wzdong
- * @description {@link @wzdong/idb} Wrapped by indexedDB.
+ * @description {@link https://github.com/wzdong26/-wzdong/tree/main/idb/README.md} Wrapped by indexedDB.
  */
-export * as idb from '@wzdong/idb';
+export * from '@wzdong/idb';
