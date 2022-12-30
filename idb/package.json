@@ -5,7 +5,6 @@
     "author": "wzdong",
     "license": "MIT",
     "main": "lib/index.js",
-    "module": "lib/index.mjs",
     "types": "lib/index.d.ts",
     "jsdelivr": "dist/index.min.js",
     "unpkg": "dist/index.min.js",
