@@ -1,5 +1,9 @@
 ## Version History
 
+### v0.0.7 - ⏱2022.12.30
+
+-   修复 jsonStringify 转换非数字时的 bug，仅对 Nan, Infinity, -Infinity 处理
+
 ### v0.0.6 - ⏱2022.12.28
 
 -   在 getUnique 和 getSingle 基础上添加了 newUnique 和 newSingle, 传入构造函数

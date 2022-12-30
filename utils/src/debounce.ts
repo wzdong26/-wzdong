@@ -9,9 +9,9 @@
  * @param ms default 800 设定时间间隔，一旦触发间隔大于该值将执行函数
  * @returns (...params: T) => Promise<R>
  */
-export const debounce = <T extends any[], R extends any>(handler: (...params: T) => R, ms: number = 800) => {
+export const debounce = <T extends any[], R>(handler: (...params: T) => R, ms: number = 800) => {
     let timer: any;
-    return function (this: any, ...params: T) {
+    return function <TT = any>(this: TT, ...params: T) {
         return new Promise<R>((resolve) => {
             if (timer) {
                 clearTimeout(timer);

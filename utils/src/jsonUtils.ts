@@ -13,7 +13,7 @@
 
 export const jsonStringify = (value: any): string =>
     JSON.stringify(value, (_, val) => {
-        if (Number.isNaN(val) || !Number.isFinite(val)) return `${val}`;
+        if (typeof val === 'number' && (Number.isNaN(val) || !Number.isFinite(val))) return `${val}`;
         return val;
     });
 
