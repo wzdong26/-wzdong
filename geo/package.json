@@ -1,12 +1,14 @@
 {
     "name": "@wzdong/geo",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "description": "💡 Geographic JavaScript Library",
     "author": "wzdong",
     "license": "MIT",
     "main": "lib/index.js",
-    "typings": "lib/index.d.ts",
+    "module": "lib/index.mjs",
+    "types": "lib/index.d.ts",
     "jsdelivr": "dist/index.min.js",
+    "unpkg": "dist/index.min.js",
     "files": [
         "lib",
         "dist",

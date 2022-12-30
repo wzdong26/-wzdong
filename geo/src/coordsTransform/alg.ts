@@ -2,6 +2,10 @@
  * @title coordTransformAlgo
  * @author wzdong
  * @description WGS84(wgs) <-> GCJ-02(gcj) <-> BD-09(bd)
+ * @exports {@link wgsToGcj} wgs -> gcj
+ * @exports {@link gcjToBd} gcj -> bd
+ * @exports {@link bdToGcj} bd -> gcj
+ * @exports {@link wgsToBd} wgs -> bd
  */
 export type CoordArr = [lon: number, lat: number]; // [lon, lat]
 

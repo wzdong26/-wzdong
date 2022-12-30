@@ -1,4 +1,6 @@
-import setupDB, { deleteDB } from './setupDB';
-import initStore from './initStore';
-
-export { setupDB, initStore, deleteDB };
+/**
+ * @title idb
+ * @author wzdong
+ * @description {@link @wzdong/idb} Wrapped by indexedDB.
+ */
+export * as idb from '@wzdong/idb';

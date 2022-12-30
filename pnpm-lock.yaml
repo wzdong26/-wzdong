@@ -26,11 +26,15 @@ importers:
   common:
     specifiers:
       '@swc/core': ^1.3.19
-      '@wzdong/utils': workspace:^0.0.0
+      '@wzdong/geo': workspace:^0.0.0
+      '@wzdong/idb': workspace:^
+      '@wzdong/utils': workspace:^
       jest: ^29.3.1
       tsup: ^6.5.0
       typescript: ^4.8.3
     dependencies:
+      '@wzdong/geo': link:../geo
+      '@wzdong/idb': link:../idb
       '@wzdong/utils': link:../utils
     devDependencies:
       '@swc/core': 1.3.19
