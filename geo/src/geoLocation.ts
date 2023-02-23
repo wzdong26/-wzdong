@@ -2,9 +2,9 @@
  * @title geoLocation
  * @description 基于原生 geolocation 实现
  * @author wzdong
- * @export {@link watchStatus} 判断是否正在定位
  * @export {@link watchGeolocation} 持续获取定位
  * @export {@link getGeolocation} 单次定位 Promise 封装
+ * @export {@link getGeolocationSync} (同步方法)获取最新定位结果
  */
 import { eventListener, getSingle } from '@wzdong/utils';
 
@@ -19,18 +19,20 @@ let watchId: number | undefined,
  */
 export const watchStatus = () => (watchId ? (isWatching ? 1 : -1) : 0);
 
+// 最新定位数据
+let curData: { data: Parameters<WatchLocationCb>[0] }= {data: null};
 const watchGeolocationInit = getSingle(() => {
-    const rst = {} as { data: Parameters<WatchLocationCb>[0] };
+    curData.data = null;
 
-    const evt = (eventListener<symbol, Parameters<WatchLocationCb>, typeof rst>).apply(rst);
+    const evt = (eventListener<symbol, Parameters<WatchLocationCb>, typeof curData>).apply(curData);
     const evtName = Symbol();
     // 添加处理函数
-    const on = (cb: WatchLocationCb<typeof rst>) => evt.on(evtName, cb);
-    const off = (cb: WatchLocationCb<typeof rst>) => {
+    const on = (cb: WatchLocationCb<typeof curData>) => evt.on(evtName, cb);
+    const off = (cb: WatchLocationCb<typeof curData>) => {
         evt.off(evtName, cb);
         !evt.getCbsNum(evtName) && cleanup();
     };
-    const once = (cb: WatchLocationCb<typeof rst>, timeout?: number) => {
+    const once = (cb: WatchLocationCb<typeof curData>, timeout?: number) => {
         let timer: any;
         if (timeout) {
             timer = setTimeout(() => {
@@ -68,7 +70,7 @@ const watchGeolocationInit = getSingle(() => {
             (data) => {
                 isWatching = true;
                 // 记录下成功的data
-                rst.data = data;
+                curData.data = data;
                 emit(data);
             },
             (err) => {
@@ -143,3 +145,10 @@ export const getGeolocation = ({
             }
         }, timeout);
     });
+
+/**
+ * getGeolocationSync (同步方法)获取最新定位结果
+ * ---
+ * @returns GeolocationPosition | null {@link GeolocationPosition}
+ */
+export const getGeolocationSync = () => curData.data;
