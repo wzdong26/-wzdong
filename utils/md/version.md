@@ -1,5 +1,9 @@
 ## Version History
 
+### v0.0.9 - ⏱2022.2.24
+
+-   getUnique 中增加了 getUniqueAsync、getSingleAsync 用于转换 Promise 函数
+
 ### v0.0.8 / 0.0.7 - ⏱2022.12.30
 
 -   修复 jsonStringify 转换非数字时的 bug，仅对 Nan, Infinity, -Infinity 处理
