@@ -19,7 +19,7 @@
 export const getUnique = <K, P extends any[], R>(fn: (...p: P) => R, set?: (key: K, rst: R) => void) => {
     const results = new Map<K, R>();
     return function <T = any>(this: T, key: K, ...p: P) {
-        let rst = results.get(key);
+        const rst = results.get(key);
         return (
             rst ??
             (() => {
@@ -44,12 +44,19 @@ export const getUnique = <K, P extends any[], R>(fn: (...p: P) => R, set?: (key:
  */
 export const getUniqueAsync = <K, P extends any[], R>(fn: (...p: P) => Promise<R>, set?: (key: K, rst: R) => void) => {
     const results = new Map<K, R>();
+    const pendings = new Map<K, Promise<R> | null>();
     return async function <T = any>(this: T, key: K, ...p: P) {
-        let rst = results.get(key);
+        const rst = results.get(key);
         return (
             rst ??
             (await (async () => {
-                const r = await fn.apply(this, p);
+                let pending = pendings.get(key);
+                if (!pending) {
+                    pending = fn.apply(this, p)
+                    pendings.set(key, pending);
+                }
+                const r = await pending;
+                pendings.set(key, null);
                 set?.(key, r);
                 results.set(key, r);
                 return r;

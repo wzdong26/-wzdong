@@ -1,5 +1,9 @@
 ## Version History
 
+### v0.0.9 - ⏱2022.2.25
+
+-   getUnique 中的 getUniqueAsync、getSingleAsync 添加了判断 Promise 函数 pending 的状态，若已处在 pending， 则等待此次 pending 的结果返回，不再重复触发 Promise 执行
+
 ### v0.0.9 - ⏱2022.2.24
 
 -   getUnique 中增加了 getUniqueAsync、getSingleAsync 用于转换 Promise 函数
