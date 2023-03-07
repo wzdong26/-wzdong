@@ -1,5 +1,6 @@
 /**
- * @title throttle
+ * @title typeOf
+ * @description 基于 Object.prototype.toString.call 实现的类型检查
  * @author wzdong
  */
 
