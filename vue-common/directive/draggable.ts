@@ -3,17 +3,7 @@
  * @description 使元素可拖拽移动，支持PC、移动端设备(vue directive)
  * @author wzdong
  * @param el 目标元素，目标元素必须是支持 inset 布局，建议 position: fixed
- * @param binding 绑定对象
- * {
- *     device,          设备，传参: 'mobile' | 'pc' | undefined, default: undefined, 两者都支持
- *     ms,              延迟时间, default 250. 与 click 事件区分
- *     o,               移动时的相对原点，支持4种, 0: 左上角; 1: 左下角; 2: 右下角; 3: 右上角; 默认为 0: 左上角
- *     axes,            移动轴，传参: 'x' | 'y' | undefined, 默认 undefined, 即光标位置; 可选择只沿 x 轴移动或只沿 y 轴移动
- *     setDefault,      设置是否应用 pointermove、touchmove 的默认事件, 默认为 undefined, 即不应用默认事件而触发拖拽移动事件; 设为 true, 则关闭拖拽移动事件, 保证默认事件的正常进行, 如页面滚动、文字拖拽选中等。
- *     onMoving,        移动时触发的回调, 返回值boolean标识其是否阻止移动, 即若返回为 true, 阻止此次移动。
- *     onBeforeMove,    移动开始前触发的回调。
- *     onMoved,         移动完成时触发的回调。
- * }
+ * @param binding 绑定对象 value {@link BindingValue}
  * @remark 在元素当前样式作用域 class 中添加 draggable[moving] / draggable[moved] 可设置移动时和移动完成时的样式
  */
 
@@ -36,20 +26,39 @@ enum Inset {
 type InsetTurtle = [top?: number, right?: number, bottom?: number, left?: number];
 
 interface BindingValue {
+    // 设备，传参: 'mobile' | 'pc' | undefined, default: undefined, 两者都支持
     device?: 'mobile' | 'pc';
+    // 触发拖拽光标长按时间, default 250. 与 click 事件区分
     ms?: number;
+    // 移动时的相对原点，支持4种, 0: 左上角; 1: 左下角; 2: 右下角; 3: 右上角; 默认为 0: 左上角
     o?: Origin;
+    // 移动轴，传参: 'x' | 'y' | undefined, 默认 undefined, 即光标位置; 可选择只沿 x 轴移动或只沿 y 轴移动
     axes?: 'x' | 'y';
+    // 设置是否应用 pointermove、touchmove 的默认事件, 默认为 undefined, 即不应用默认事件而触发拖拽移动事件;
+    // params evt: 指针坐标, flag: 标记是否移动开始; return setDefaultVal: 标记是否阻止拖拽，设为默认事件，设为 true, 则阻止拖拽移动, 保证默认事件的正常进行, 如页面滚动、文字拖拽选中等。
     setDefault?: (evt?: { clientX: number; clientY: number }, flag?: boolean) => boolean;
+    // 移动时触发的回调, 返回值boolean标识其是否阻止移动, 即若返回为 true, 阻止此次移动。
+    // params inset: 当前将要移动的样式属性inset, oldInset: 移动前的样式属性inset; return flag: 标记是否阻止此次移动
     onMoving?: (inset: InsetTurtle, oldInset: InsetTurtle) => boolean;
+    // 移动开始前触发的回调。
     onBeforeMove?: (inset: InsetTurtle) => void;
+    // 移动完成时触发的回调。
     onMoved?: (inset: InsetTurtle) => void;
 }
 
 const draggable = (
     el: HTMLElement,
     {
-        value: { device, ms = 300, o: origin = Origin['topLeft'], axes, setDefault, onMoving, onBeforeMove, onMoved } = {} as any,
+        value: {
+            device,
+            ms = 300,
+            o: origin = Origin['topLeft'],
+            axes,
+            setDefault,
+            onMoving,
+            onBeforeMove,
+            onMoved,
+        } = {} as any,
     }: DirectiveBinding<BindingValue>
 ) => {
     // margin 影响 inset 位置, 目标元素 margin 必须为 0
@@ -113,6 +122,7 @@ const draggable = (
     // 元素的 style.inset
     let insetStyle: InsetTurtle;
     // 记录指针相对元素位置
+    // params clientX, clientY 指针绝对坐标
     const recordPointerPos = (clientX: number, clientY: number) => {
         const { top, left, width, height } = el.getBoundingClientRect();
         const { innerWidth, innerHeight } = window;
@@ -125,6 +135,7 @@ const draggable = (
     };
 
     // 设置目标元素位置，以指针为基点
+    // params clientX, clientY 指针绝对坐标
     const setElPos = (clientX: number, clientY: number) => {
         const { x, y } = pointerRelativePos;
         const left = clientX - x;
@@ -151,19 +162,18 @@ const draggable = (
     // 触发移动
     let enableMove = false;
     // 移动中
-    // 适用于PC, 移动设备 touch 会不定时触发 pointerleave, 无法用 onpointermove 监听
-    const onPointermove = (evt: PointerEvent) => {
-        const { clientX, clientY } = evt;
-        if (!!setDefault?.({ clientX, clientY }, false)) return;
-        evt.preventDefault();
-        evt.stopPropagation();
-        enableMove && setElPos(clientX, clientY);
-    };
-    // 适用于移动设备
-    const onTouchmove = (evt: TouchEvent) => {
-        el.removeEventListener('pointermove', onPointermove);
-        const { clientX, clientY } = evt.touches[0];
-        if (!!setDefault?.({ clientX, clientY }, false)) return;
+    const onMove = (evt: PointerEvent | TouchEvent) => {
+        if (evt instanceof TouchEvent) {
+            el.removeEventListener('pointermove', onMove);
+            const { clientX, clientY } = evt.touches[0];
+            (evt as any).clientX = clientX;
+            (evt as any).clientY = clientY;
+        }
+        const { clientX, clientY } = evt as PointerEvent;
+        if (!!setDefault?.({ clientX, clientY }, false)) {
+            timer && clearTimeout(timer);
+            return;
+        }
         evt.preventDefault();
         evt.stopPropagation();
         enableMove && setElPos(clientX, clientY);
@@ -174,13 +184,15 @@ const draggable = (
         setStyle(el, 'moved', true);
         const { clientX, clientY } = evt;
         if (!!setDefault?.({ clientX, clientY }, true)) return;
+        // 适用于移动设备
         device !== 'pc' &&
-            document.addEventListener('touchmove', onTouchmove, {
+            document.addEventListener('touchmove', onMove, {
                 passive: false,
                 capture: true,
             });
+        // 适用于PC, 移动设备 touch 会不定时触发 pointerleave, 无法用 onpointermove 监听
         device !== 'mobile' &&
-            document.addEventListener('pointermove', onPointermove, {
+            document.addEventListener('pointermove', onMove, {
                 passive: false,
                 capture: true,
             });
@@ -205,14 +217,15 @@ const draggable = (
     // 停止移动
     const stopMove = () => {
         timer && clearTimeout(timer);
-        document.removeEventListener('pointermove', onPointermove, true);
-        document.removeEventListener('touchmove', onTouchmove, true);
+        document.removeEventListener('pointermove', onMove, true);
+        document.removeEventListener('touchmove', onMove, true);
         if (enableMove) {
             setStyle(el, 'moving', true);
             setStyle(el, 'moved');
             onMoved?.([...insetStyle]);
             enableMove = false;
         }
+        enableMove = false;
     };
 
     // 阻止PC端点击事件冒泡
