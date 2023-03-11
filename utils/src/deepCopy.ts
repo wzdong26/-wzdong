@@ -7,7 +7,7 @@
 // 拷贝常规对象、数组(不包含Function、Map、Set)
 const deepCopySimplify = (obj: unknown, visited = new WeakMap()) => {
     let copied = obj;
-    
+
     // 不是引用型，直接返回
     if (!(obj instanceof Object)) return copied;
 
@@ -21,8 +21,9 @@ const deepCopySimplify = (obj: unknown, visited = new WeakMap()) => {
     // 核心
     const objDescriptors = Object.getOwnPropertyDescriptors(obj);
     for (const k of Reflect.ownKeys(objDescriptors)) {
-        if (objDescriptors[k].value instanceof Object) {
-            objDescriptors[k].value = deepCopy(obj[k], visited);
+        const kk = k as any;
+        if (objDescriptors[kk].value instanceof Object) {
+            objDescriptors[kk].value = deepCopy((obj as any)[kk], visited);
         }
     }
     Object.defineProperties(copied, objDescriptors);
