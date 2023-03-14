@@ -22,7 +22,6 @@ test('deepCopy', () => {
     });
 
     const copied = deepCopy(obj);
-    console.log(copied)
 
     const fn = (i) => i;
     const copiedFn = deepCopy(fn);

@@ -1,4 +1,4 @@
-const { jsonParse, jsonStringify } = require('@wzdong/utils/lib/jsonUtils')
+const { jsonParse, jsonStringify } = require('@wzdong/utils')
 
 test('jsonUtils', () => {
     const obj = { a: 1, b: NaN, c: -Infinity, d: Infinity };
