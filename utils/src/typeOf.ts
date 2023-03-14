@@ -13,7 +13,7 @@ typeOf.isBoolean = (val: unknown): val is boolean => typeOf(val) === 'Boolean';
 typeOf.isNumber = (val: unknown): val is number => typeOf(val) === 'Number';
 typeOf.isBigInt = (val: unknown): val is bigint => typeOf(val) === 'BigInt';
 typeOf.isSymbol = (val: unknown): val is symbol => typeOf(val) === 'Symbol';
-typeOf.isObject = (val: unknown): val is Exclude<NonNullable<Object>, Array<unknown>> => typeOf(val) === 'Object';
+typeOf.isObject = (val: unknown): val is Exclude<NonNullable<Object>, Array<unknown> | Function> => typeOf(val) === 'Object';
 typeOf.isArray = (val: unknown): val is Array<unknown> => typeOf(val) === 'Array';
 typeOf.isFunction = (val: unknown): val is Function => typeOf(val) === 'Function';
 

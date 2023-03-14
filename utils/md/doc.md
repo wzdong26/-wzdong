@@ -159,3 +159,11 @@ animate(({ delta }) => {
     point.setCoordinates(coords);
 }, duration).then(() => point.setCoordinates(destinationCoords));
 ```
+
+## 7. typeOf
+
+基于 Object.prototype.toString.call 实现
+
+## 8. deepCopy
+
+深拷贝，支持拷贝类型为 Symbol、不可迭代属性的对象、Function、Set、Map

@@ -1,6 +1,12 @@
 ## Version History
 
-### v0.0.9 - ⏱2022.2.25
+### v0.0.11 - ⏱2022.3.14
+
+-   getUnique 中添加 controller 选择 参数控制 还是 返回值控制
+-   添加 typeOf 判断数据类型函数
+-   添加 deepCopy 深拷贝
+
+### v0.0.10 - ⏱2022.2.25
 
 -   getUnique 中的 getUniqueAsync、getSingleAsync 添加了判断 Promise 函数 pending 的状态，若已处在 pending， 则等待此次 pending 的结果返回，不再重复触发 Promise 执行
 
