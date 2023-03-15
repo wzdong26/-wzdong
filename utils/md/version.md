@@ -1,6 +1,6 @@
 ## Version History
 
-### v0.0.11 / 12 - ⏱2022.3.14
+### v0.0.11 / 12 / 13 - ⏱2022.3.14
 
 -   getUnique 中添加 controller 选择 参数控制 还是 返回值控制
 -   添加 typeOf 判断数据类型函数
