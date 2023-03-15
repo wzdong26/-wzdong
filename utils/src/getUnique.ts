@@ -87,10 +87,11 @@ export const getUniqueAsync: GetUniqueAsync = <K, P extends any[], R>(
     const promises = new Map<K, Promise<R> | null>();
     return async function <T = any>(this: T, key: K, ...p: P) {
         const rst = results.get(key);
-        if (controller && !p.length) return rst;
+        let pending = promises.get(key);
+
+        if (controller && !p.length && !pending) return rst;
         if (!controller && rst != null) return rst;
 
-        let pending = promises.get(key);
         if (!pending) {
             pending = fn.apply(this, p);
             promises.set(key, pending);
