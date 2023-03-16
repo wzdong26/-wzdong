@@ -1,7 +1,13 @@
 ## Version History
 
+### v0.0.5 - ⏱2023.3.16
+
+-   watchGeolocation 返回值添加 pause 方法用于停止调用定位（原本使用 cleanup 方法），cleanup 方法用于清除 watchGeolocation 中传入的监听回调；为保证应用性能，当 watchGeolocation 中的监听回调为空时将自动调用 pause 方法停止定位，重新添加监听回调将触发定位
+
 ### v0.0.4 / 0.0.3 - ⏱2023.2.23
+
 -   geoLocation 中添加 getGeolocationSync 方法, (同步方法)获取最新定位结果
+
 ### v0.0.2 / 0.0.1 - ⏱2022.12.30
 
 -   添加 coordsTransform, 包括 wgs84 gcj bd 三者的转换

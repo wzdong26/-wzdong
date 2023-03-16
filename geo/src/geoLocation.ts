@@ -20,7 +20,7 @@ let watchId: number | undefined,
 export const watchStatus = () => (watchId ? (isWatching ? 1 : -1) : 0);
 
 // 最新定位数据
-let curData: { data: Parameters<WatchLocationCb>[0] }= {data: null};
+let curData: { data: Parameters<WatchLocationCb>[0] } = { data: null };
 const watchGeolocationInit = getSingle(() => {
     curData.data = null;
 
@@ -30,7 +30,7 @@ const watchGeolocationInit = getSingle(() => {
     const on = (cb: WatchLocationCb<typeof curData>) => evt.on(evtName, cb);
     const off = (cb: WatchLocationCb<typeof curData>) => {
         evt.off(evtName, cb);
-        !evt.getCbsNum(evtName) && cleanup();
+        !evt.getCbsNum(evtName) && pause();
     };
     const once = (cb: WatchLocationCb<typeof curData>, timeout?: number) => {
         let timer: any;
@@ -43,14 +43,14 @@ const watchGeolocationInit = getSingle(() => {
             }, timeout);
         }
         evt.once(evtName, function (data, err) {
-            clearTimeout(timer);
             cb.apply(this, [data, err]);
-            setTimeout(() => {
-                !evt.getCbsNum(evtName) && cleanup();
-            });
+            evt.getCbsNum(evtName) === 1 && pause();
         });
     };
-    const clear = () => evt.clear(evtName);
+    const clear = () => {
+        evt.clear(evtName);
+        pause();
+    };
     const emit: WatchLocationCb = (data, err) => evt.emit(evtName, data, err);
 
     // `ngl` -> navigator.geolocation
@@ -75,20 +75,20 @@ const watchGeolocationInit = getSingle(() => {
             },
             (err) => {
                 emit(null, err);
-                cleanup();
+                pause();
                 resume(opt);
             },
             opt
         );
     };
     // 停止获取定位
-    const cleanup = () => {
+    const pause = () => {
         watchId && ngl.clearWatch(watchId);
         isWatching = false;
         watchId = undefined;
         clear();
     };
-    return { on, off, once, clear, emit, compatNgl, resume, cleanup };
+    return { on, off, once, clear, emit, compatNgl, resume, pause };
 });
 
 /**
@@ -97,26 +97,27 @@ const watchGeolocationInit = getSingle(() => {
  * @param opt {@link PositionOptions}
  * ---
  * @returns
- * @property cleanup 停止获取定位
+ * @property pause 停止获取定位
  * @property on 添加监听函数
  * @property off 移除监听函数
  * @property once 单次监听函数
- * @property clear 清除监听函数
+ * @property clear 清除所有监听函数并停止调用定位
+ * @property cleanup 清除 watchGeolocation 中传入的 cb 监听函数
  */
 export const watchGeolocation = (
     cb?: WatchLocationCb | null,
     { enableHighAccuracy = true, maximumAge = 0 }: Omit<PositionOptions, 'timeout'> = {}
 ) => {
-    const initFns = watchGeolocationInit();
-    cb && initFns.on(cb);
+    const { compatNgl, resume, ...returnFn } = watchGeolocationInit();
 
-    const { compatNgl, resume, ...returnFn } = initFns;
+    cb && returnFn.on(cb);
+    const cleanup = () => {
+        cb && returnFn.off(cb);
+    };
 
-    if (!compatNgl()) return returnFn;
+    compatNgl() && resume({ enableHighAccuracy, maximumAge });
 
-    resume({ enableHighAccuracy, maximumAge });
-
-    return returnFn;
+    return { ...returnFn, cleanup };
 };
 
 /**
