@@ -11,16 +11,16 @@ interface GetUniqueReturn<K, P extends any[], R> {
     (this: unknown, key: K): R | undefined;
 }
 interface GetUnique {
-    <K, P extends any[], R>(
-        fn: (...p: P) => R,
-        set: ((key: K, rst: R) => void) | undefined | null,
+    <K>(
+        fn: <P extends any[], R>(...p: P) => R,
+        set: ((key: K, rst: ReturnType<typeof fn>) => void) | undefined | null,
         controller: true
-    ): GetUniqueReturn<K, P, R>;
-    <K, P extends any[], R>(fn: (...p: P) => R, set?: ((key: K, rst: R) => void) | null, controller?: false): (
-        this: unknown,
-        key: K,
-        ...p: P
-    ) => R;
+    ): GetUniqueReturn<K, Parameters<typeof fn>, ReturnType<typeof fn>>;
+    <K>(
+        fn: <P extends any[], R>(...p: P) => R,
+        set?: ((key: K, rst: ReturnType<typeof fn>) => void) | null,
+        controller?: false
+    ): (this: unknown, key: K, ...p: Parameters<typeof fn>) => ReturnType<typeof fn>;
 }
 /**
  * getUnique
@@ -56,16 +56,16 @@ interface GetUniqueAsyncReturn<K, P extends any[], R> {
     (this: unknown, key: K): Promise<R | undefined>;
 }
 interface GetUniqueAsync {
-    <K, P extends any[], R>(
-        fn: (...p: P) => Promise<R>,
-        set: ((key: K, rst: R) => void) | undefined | null,
+    <K>(
+        fn: <P extends any[], R>(...p: P) => Promise<R>,
+        set: ((key: K, rst: ReturnType<typeof fn>) => void) | undefined | null,
         controller: true
-    ): GetUniqueAsyncReturn<K, P, R>;
-    <K, P extends any[], R>(fn: (...p: P) => Promise<R>, set?: ((key: K, rst: R) => void) | null, controller?: false): (
-        this: unknown,
-        key: K,
-        ...p: P
-    ) => Promise<R>;
+    ): GetUniqueAsyncReturn<K, Parameters<typeof fn>, ReturnType<typeof fn>>;
+    <K>(
+        fn: <P extends any[], R>(...p: P) => Promise<R>,
+        set?: ((key: K, rst: ReturnType<typeof fn>) => void) | null,
+        controller?: false
+    ): (this: unknown, key: K, ...p: Parameters<typeof fn>) => Promise<ReturnType<typeof fn>>;
 }
 /**
  * getUniqueAsync
@@ -105,16 +105,16 @@ export const getUniqueAsync: GetUniqueAsync = <K, P extends any[], R>(
 };
 
 interface NewUnique {
-    <K, P extends any[], R>(
-        fn: new (...p: P) => R,
-        set: ((key: K, rst: R) => void) | undefined | null,
+    <K>(
+        fn: new <P extends any[], R>(...p: P) => R,
+        set: ((key: K, rst: InstanceType<typeof fn>) => void) | undefined | null,
         controller: true
-    ): GetUniqueReturn<K, P, R>;
-    <K, P extends any[], R>(fn: new (...p: P) => R, set?: ((key: K, rst: R) => void) | null, controller?: false): (
-        this: unknown,
-        key: K,
-        ...p: P
-    ) => R;
+    ): GetUniqueReturn<K, ConstructorParameters<typeof fn>, InstanceType<typeof fn>>;
+    <K>(
+        fn: new <P extends any[], R>(...p: P) => R,
+        set?: ((key: K, rst: InstanceType<typeof fn>) => void) | null,
+        controller?: false
+    ): (this: unknown, key: K, ...p: ConstructorParameters<typeof fn>) => InstanceType<typeof fn>;
 }
 /**
  * newUnique
@@ -147,10 +147,10 @@ interface GetSingle {
  * @param p 工厂函数 fn 的原始入参
  * @return R 工厂函数 fn 返回的对象
  */
-export const getSingle: GetSingle = <P extends any[], R>(fn: (...p: P) => R, controller?: boolean) => {
+export const getSingle: GetSingle = (fn: <P extends any[], R>(...p: P) => R, controller?: boolean) => {
     const key = Symbol();
     const uniFn = controller ? getUnique(fn, undefined, controller) : getUnique(fn, undefined);
-    return function (this: unknown, ...p: P) {
+    return function (this: unknown, ...p) {
         return uniFn.call(this, key, ...p);
     };
 };
@@ -172,13 +172,13 @@ interface GetSingleAsync {
  * @param p Promise 函数 fn 的原始入参
  * @return R Promise 函数 fn 返回的对象
  */
-export const getSingleAsync: GetSingleAsync = <P extends any[], R>(
-    fn: (...p: P) => Promise<R>,
+export const getSingleAsync: GetSingleAsync = (
+    fn: <P extends any[], R>(...p: P) => Promise<R>,
     controller?: boolean
 ) => {
     const key = Symbol();
     const uniFn = controller ? getUniqueAsync(fn, undefined, controller) : getUniqueAsync(fn, undefined);
-    return async function (this: unknown, ...p: P) {
+    return async function (this: unknown, ...p) {
         return await uniFn.call(this, key, ...p);
     };
 };
