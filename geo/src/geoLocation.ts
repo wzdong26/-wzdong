@@ -43,6 +43,7 @@ const watchGeolocationInit = getSingle(() => {
             }, timeout);
         }
         evt.once(evtName, function (data, err) {
+            clearTimeout(timer);
             cb.apply(this, [data, err]);
             evt.getCbsNum(evtName) === 1 && pause();
         });
@@ -64,11 +65,17 @@ const watchGeolocationInit = getSingle(() => {
         }
         return !!ngl;
     };
+    // 定位 api 持续报错次数
+    let errNum = 0,
+        maxErrNum = 5,
+        resumeTimer: undefined | number | NodeJS.Timeout,
+        resumeDelay = 1000;
     // 开始获取定位
     const resume = (opt?: Omit<PositionOptions, 'timeout'>) => {
         watchId ??= ngl.watchPosition(
             (data) => {
                 isWatching = true;
+                errNum = 0;
                 // 记录下成功的data
                 curData.data = data;
                 emit(data);
@@ -76,7 +83,13 @@ const watchGeolocationInit = getSingle(() => {
             (err) => {
                 emit(null, err);
                 pause();
-                resume(opt);
+                if (++errNum >= maxErrNum) {
+                    resumeTimer = setTimeout(() => {
+                        resume(opt);
+                    }, Math.min(resumeDelay * maxErrNum, (errNum + 1 - maxErrNum) * resumeDelay));
+                } else {
+                    resume(opt);
+                }
             },
             opt
         );
@@ -84,6 +97,7 @@ const watchGeolocationInit = getSingle(() => {
     // 停止获取定位
     const pause = () => {
         watchId && ngl.clearWatch(watchId);
+        resumeTimer && clearTimeout(resumeTimer);
         isWatching = false;
         watchId = undefined;
         evt.getCbsNum(evtName) && clear();
