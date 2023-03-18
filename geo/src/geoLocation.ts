@@ -86,7 +86,7 @@ const watchGeolocationInit = getSingle(() => {
         watchId && ngl.clearWatch(watchId);
         isWatching = false;
         watchId = undefined;
-        clear();
+        evt.getCbsNum(evtName) && clear();
     };
     return { on, off, once, clear, emit, compatNgl, resume, pause };
 });
