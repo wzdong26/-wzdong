@@ -3,7 +3,7 @@
 <p align="right">
     <i>中文</i> 
     - | -
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/idb/md/doc.md">EN</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/idb/md/doc.md">EN</a>
 </p>
 
 ## 🔨 安装

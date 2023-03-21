@@ -1,16 +1,16 @@
 # @wzdong/idb
 
 <p align="center" style="font-size: large">
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/idb">🐱 Github</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/idb">🐱 Github</a>
      | 
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/idb/md/doc.md">📖 Docs</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/idb/md/doc.md">📖 Docs</a>
      | 
     <a href="https://github.com/wzdong26/-wzdong/issues">👨‍🔧 Issues</a>
      |
     <a href="https://github.com/wzdong26/-wzdong/md/version.md">🕙 Version</a>
 </p>
 <p align="right">
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/idb/README_zh.md">中文</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/idb/README_zh.md">中文</a>
     - | -
     <i>EN</i> 
 </p>

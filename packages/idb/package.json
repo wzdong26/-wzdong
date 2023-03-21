@@ -1,7 +1,7 @@
 {
-    "name": "@wzdong/geo",
-    "version": "0.0.6",
-    "description": "💡 Geographic JavaScript Library",
+    "name": "@wzdong/idb",
+    "version": "1.1.8",
+    "description": "💡 Let your application use indexedDB simply with `Promise`",
     "author": "wzdong",
     "license": "MIT",
     "main": "lib/index.js",
@@ -18,9 +18,7 @@
         "dev": "tsup --watch",
         "prepare": "pnpm build"
     },
-    "dependencies": {
-        "@wzdong/utils": "workspace:^0.0.6"
-    },
+    "dependencies": {},
     "devDependencies": {
         "@swc/core": "^1.3.19",
         "tsup": "^6.5.0",
@@ -28,12 +26,13 @@
     },
     "private": false,
     "keywords": [
-        "geolocation",
-        "coordsTransform"
+        "indexedDB",
+        "db",
+        "localStorage"
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/wzdong26/-wzdong/tree/main/geo"
+        "url": "https://github.com/wzdong26/-wzdong/tree/main/packages/idb"
     },
     "bugs": "https://github.com/wzdong26/-wzdong/issues"
 }

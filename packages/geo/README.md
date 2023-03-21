@@ -1,16 +1,16 @@
 # @wzdong/geo
 
 <p align="center" style="font-size: large">
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/geo">🐱 Github</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/geo">🐱 Github</a>
      | 
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/geo/md/doc.md">📖 Docs</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/geo/md/doc.md">📖 Docs</a>
      | 
     <a href="https://github.com/wzdong26/-wzdong/issues">👨‍🔧 Issues</a>
      |
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/geo/md/version.md">🕙 Version</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/geo/md/version.md">🕙 Version</a>
 </p>
 <!-- <p align="right">
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/geo/README_zh.md">中文</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/geo/README_zh.md">中文</a>
     - | -
     <i>EN</i> 
 </p> -->

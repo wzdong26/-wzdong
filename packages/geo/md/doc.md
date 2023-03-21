@@ -1,7 +1,7 @@
 # 📖 `@wzdong/geo` Documentation
 
 <p align="right">
-    <!-- <a href="https://github.com/wzdong26/-wzdong/tree/main/geo/md/document_zh.md">中文</a> -->
+    <!-- <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/geo/md/document_zh.md">中文</a> -->
     - | -
     <i>EN</i> 
 </p>

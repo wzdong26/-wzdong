@@ -1,9 +1,9 @@
 {
     "name": "@wzdong",
     "version": "0.0.0",
-    "description": "💡 @wzdong package",
+    "description": "💡 @wzdong packages",
     "author": "wzdong",
-    "license": "MIT",
+    "private": true,
     "scripts": {},
     "dependencies": {
         "vue": "^3.2.16"
@@ -16,12 +16,8 @@
         "tsup": "^6.5.0",
         "typescript": "^4.8.3"
     },
-    "private": true,
     "workspaces": [
-        "*"
-    ],
-    "keywords": [
-        "wzdong"
+        "packages/*"
     ],
     "repository": {
         "type": "git",

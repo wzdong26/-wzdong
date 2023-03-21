@@ -1,16 +1,16 @@
 # @wzdong/utils
 
 <p align="center" style="font-size: large">
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/utils">🐱 Github</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/utils">🐱 Github</a>
      | 
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/utils/md/doc.md">📖 Docs</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/utils/md/doc.md">📖 Docs</a>
      | 
     <a href="https://github.com/wzdong26/-wzdong/issues">👨‍🔧 Issues</a>
      |
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/utils/md/version.md">🕙 Version</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/utils/md/version.md">🕙 Version</a>
 </p>
 <!-- <p align="right">
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/utils/README_zh.md">中文</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/utils/README_zh.md">中文</a>
     - | -
     <i>EN</i> 
 </p> -->

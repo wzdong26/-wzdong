@@ -1,9 +1,9 @@
 # @wzdong/idb
 
 <p align="center" style="font-size: large">
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/idb">🐱 Github</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/idb">🐱 Github</a>
      | 
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/idb/md/doc_zh.md">📖 文档</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/idb/md/doc_zh.md">📖 文档</a>
      | 
     <a href="https://github.com/wzdong26/-wzdong/issues">👨‍🔧 Issues</a>
      |
@@ -12,7 +12,7 @@
 <p align="right">
     <i>中文</i> 
     - | -
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/idb/README.md">EN</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/idb/README.md">EN</a>
 </p>
 
 ## 📙 写在前面：

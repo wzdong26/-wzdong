@@ -1,7 +1,7 @@
 # 📖 `@wzdong/common` Documentation
 
 <p align="right">
-    <!-- <a href="https://github.com/wzdong26/-wzdong/tree/main/common/md/document_zh.md">中文</a> -->
+    <!-- <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/common/md/document_zh.md">中文</a> -->
     - | -
     <i>EN</i> 
 </p>
@@ -34,24 +34,24 @@ import { LocalStore } from '@wzdong/common';
 const { get, set, clear } = new LocalStore<string[]>('searchHistory');
 ```
 
-## idb (@link https://github.com/wzdong26/-wzdong/tree/main/idb/md/doc.md)
+## idb (@link https://github.com/wzdong26/-wzdong/tree/main/packages/idb/md/doc.md)
 
 ```typescript
 import { initStore } from '@wzdong/common';
 
 /**
- * {@link https://github.com/wzdong26/-wzdong/tree/main/idb/md/doc.md}
+ * {@link https://github.com/wzdong26/-wzdong/tree/main/packages/idb/md/doc.md}
  * ... ...
  */
 ```
 
-## geo (@link https://github.com/wzdong26/-wzdong/tree/main/geo/md/doc.md)
+## geo (@link https://github.com/wzdong26/-wzdong/tree/main/packages/geo/md/doc.md)
 
 ```typescript
 import { watchGeolocation } from '@wzdong/common';
 
 /**
- * {@link https://github.com/wzdong26/-wzdong/tree/main/geo/md/doc.md}
+ * {@link https://github.com/wzdong26/-wzdong/tree/main/packages/geo/md/doc.md}
  * ... ...
  */
 ```

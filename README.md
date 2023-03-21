@@ -8,7 +8,7 @@
     <a href="https://github.com/wzdong26/-wzdong/issues">👨‍🔧 Issues</a>
 </center>
 <!-- <p align="right">
-    <a href="https://github.com/wzdong26/-wzdong/tree/main/idb/README_zh.md">中文</a>
+    <a href="https://github.com/wzdong26/-wzdong/tree/main/packages/idb/README_zh.md">中文</a>
     - | -
     <i>EN</i> 
 </p> -->
