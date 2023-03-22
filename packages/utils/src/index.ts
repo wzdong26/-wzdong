@@ -7,4 +7,6 @@ export * from './getUnique';
 export * from './jsonUtils';
 export * from './setAnimation';
 export * from './throttle';
+export * from './promiseFns';
+
 export { typeOf, deepCopy };
