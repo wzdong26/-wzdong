@@ -10,26 +10,28 @@
  * @param limit 限制并发数
  * @return function fn (this: T, ...p: P) => Promise<R>
  */
-export const promiseLimit = <P extends [], R, T = unknown>(
+export const promiseLimit = <P extends any[], R, T = unknown>(
     promiseFn: (this: T, ...p: P) => Promise<R>,
-    limit: number
+    maxConcurrency: number,
+    limit?: boolean
 ) => {
-    const pendingQueue: Promise<R>[] = [];
+    const pendingQueue: Set<Promise<R>> = new Set();
     return async function fn(this: T, ...p: P): Promise<R> {
-        if (pendingQueue.length >= limit) {
+        if (pendingQueue.size >= maxConcurrency) {
+            if (limit) throw Error(`Promise concurrency exceeds maximum limit ${maxConcurrency}`);
             try {
                 await Promise.race(pendingQueue);
             } catch {}
             return await fn.apply(this, p);
         }
         const pending = promiseFn.apply(this, p);
-        pendingQueue.push(pending);
+        pendingQueue.add(pending);
         try {
             const rst = await pending;
-            pendingQueue.splice(pendingQueue.indexOf(pending), 1);
+            pendingQueue.delete(pending);
             return rst;
         } catch (e) {
-            pendingQueue.splice(pendingQueue.indexOf(pending), 1);
+            pendingQueue.delete(pending);
             throw e;
         }
     };
