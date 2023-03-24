@@ -1,5 +1,9 @@
 ## Version History
 
+### v0.0.4 - ⏱2022.3.24
+
+-   添加了 customEvents: `import '@wzdong/common/customEvents'`, 自定义若干 DOM 事件
+
 ### v0.0.3 - ⏱2022.12.30
 
 -   更新依赖 geo 版本 0.0.4
