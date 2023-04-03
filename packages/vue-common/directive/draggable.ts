@@ -7,234 +7,177 @@
  * @remark 在元素当前样式作用域 class 中添加 draggable[moving] / draggable[moved] 可设置移动时和移动完成时的样式
  */
 
+import { throttle, typeOf } from '@wzdong/utils';
 import { DirectiveBinding } from 'vue';
 
-export enum Origin {
-    topLeft,
-    bottomLeft,
-    bottomRight,
-    topRight,
+enum Inset {
+    top = 1,
+    right = 1 << 2,
+    bottom = 1 << 3,
+    left = 1 << 4,
 }
 
-enum Inset {
-    top,
-    right,
-    bottom,
-    left,
+export enum DragDirection {
+    top = Inset.top,
+    right = Inset.right,
+    bottom = Inset.bottom,
+    left = Inset.left,
+    top_left = Inset.top | Inset.left,
+    top_right = Inset.top | Inset.right,
+    bottom_left = Inset.bottom | Inset.left,
+    bottom_right = Inset.bottom | Inset.right,
 }
 
 type InsetTurtle = [top?: number, right?: number, bottom?: number, left?: number];
 
-interface BindingValue {
-    // 设备，传参: 'mobile' | 'pc' | undefined, default: undefined, 两者都支持
-    device?: 'mobile' | 'pc';
-    // 触发拖拽光标长按时间, default 250. 与 click 事件区分
-    ms?: number;
-    // 移动时的相对原点，支持4种, 0: 左上角; 1: 左下角; 2: 右下角; 3: 右上角; 默认为 0: 左上角
-    o?: Origin;
-    // 移动轴，传参: 'x' | 'y' | undefined, 默认 undefined, 即光标位置; 可选择只沿 x 轴移动或只沿 y 轴移动
-    axes?: 'x' | 'y';
-    // 设置是否应用 pointermove、touchmove 的默认事件, 默认为 undefined, 即不应用默认事件而触发拖拽移动事件;
-    // params evt: 指针坐标, flag: 标记是否移动开始; return setDefaultVal: 标记是否阻止拖拽，设为默认事件，设为 true, 则阻止拖拽移动, 保证默认事件的正常进行, 如页面滚动、文字拖拽选中等。
-    setDefault?: (evt?: { clientX: number; clientY: number }, flag?: boolean) => boolean;
-    // 移动时触发的回调, 返回值boolean标识其是否阻止移动, 即若返回为 true, 阻止此次移动。
-    // params inset: 当前将要移动的样式属性inset, oldInset: 移动前的样式属性inset; return flag: 标记是否阻止此次移动
-    onMoving?: (inset: InsetTurtle, oldInset: InsetTurtle) => boolean;
-    // 移动开始前触发的回调。
-    onBeforeMove?: (inset: InsetTurtle) => void;
-    // 移动完成时触发的回调。
-    onMoved?: (inset: InsetTurtle) => void;
-}
+export type OnMove = (curInset: InsetTurtle, inset: InsetTurtle, preventMove: () => true) => void | (() => void);
 
-const draggable = (
-    el: HTMLElement,
-    {
-        value: {
-            device,
-            ms = 300,
-            o: origin = Origin['topLeft'],
-            axes,
-            setDefault,
-            onMoving,
-            onBeforeMove,
-            onMoved,
-        } = {} as any,
-    }: DirectiveBinding<BindingValue>
-) => {
-    // margin 影响 inset 位置, 目标元素 margin 必须为 0
-    el.style.margin = '0';
+type BindingValue =
+    | {
+          // return direction: DragDirection: 指定拖拽方向，支持 8 种; 默认为 DragDirection.top_left 以左侧和顶侧为基准移动;
+          direction?: DragDirection;
+          // 触发拖拽光标长按时间, default 80. 与 click 事件区分
+          ms?: number;
+          // 事件阶段
+          capture?: boolean;
+          // dragging 时的样式名
+          class?: string;
+          // 移动时触发的回调, 返回值boolean标识其是否阻止移动, 即若返回为 true, 阻止此次移动。
+          // param curInset: 当前的样式属性inset;
+          // param inset: 当前将要移动的样式属性inset;
+          // param preventMove: 是否阻止此次移动, 调用则阻止;
+          // return onMoved: () => void: 移动完成时触发的回调。
+          onMove?: OnMove;
+      }
+    | OnMove
+    | undefined;
 
-    // 设置移动时的样式
-    const setStyle = (el: HTMLElement, status: 'moving' | 'moved', flag?: boolean) => {
-        const { classList } = el;
-        classList[flag ? 'remove' : 'add'](`draggable[${status}]`);
-        classList[flag ? 'remove' : 'add'](`${classList[0]}[${status}]`);
+let cleanup: () => void;
+
+// 计算 window 的 innerWidth, innerHeight
+let { innerWidth, innerHeight } = window;
+const computeWindowRect = () => {
+    const onResize = () => {
+        [innerWidth, innerHeight] = [window.innerWidth, window.innerHeight];
     };
-
-    // 根据 origin 和 axes 判断该改变 el.style.inset 的哪个值
-    const changeInsetStyleIdx = (() => {
-        switch (origin) {
-            case Origin['topLeft']:
-                switch (axes) {
-                    case 'x':
-                        return [3];
-                    case 'y':
-                        return [0];
-                }
-                return [0, 3];
-            case Origin['bottomLeft']:
-                switch (axes) {
-                    case 'x':
-                        return [3];
-                    case 'y':
-                        return [2];
-                }
-                return [2, 3];
-            case Origin['bottomRight']:
-                switch (axes) {
-                    case 'x':
-                        return [1];
-                    case 'y':
-                        return [2];
-                }
-                return [1, 2];
-            case Origin['topRight']:
-                switch (axes) {
-                    case 'x':
-                        return [1];
-                    case 'y':
-                        return [0];
-                }
-                return [0, 1];
-        }
-    })();
-
-    let pointerRelativePos: { x: number; y: number },
-        // 获取元素宽高以及视窗宽高
-        widthHeight: {
-            width: number;
-            height: number;
-            innerWidth: number;
-            innerHeight: number;
-        },
-        timer: any;
-
-    // 元素的 style.inset
-    let insetStyle: InsetTurtle;
-    // 记录指针相对元素位置
-    // params clientX, clientY 指针绝对坐标
-    const recordPointerPos = (clientX: number, clientY: number) => {
-        const { top, left, width, height } = el.getBoundingClientRect();
-        const { innerWidth, innerHeight } = window;
-        widthHeight = { width, height, innerWidth, innerHeight };
-        insetStyle = [top, innerWidth - width - left, innerHeight - height - top, left];
-        pointerRelativePos = {
-            x: clientX - left,
-            y: clientY - top,
-        };
-    };
-
-    // 设置目标元素位置，以指针为基点
-    // params clientX, clientY 指针绝对坐标
-    const setElPos = (clientX: number, clientY: number) => {
-        const { x, y } = pointerRelativePos;
-        const left = clientX - x;
-        const top = clientY - y;
-        const { width, height, innerWidth, innerHeight } = widthHeight;
-        const insetAllArr = [top, innerWidth - width - left, innerHeight - height - top, left];
-        const oldInset = [...insetStyle] as InsetTurtle;
-        insetStyle.fill(undefined);
-        if (changeInsetStyleIdx.length === 1) {
-            const idx = changeInsetStyleIdx[0],
-                insetStr = Inset[idx];
-            insetStyle[idx] = insetAllArr[idx];
-            !onMoving?.(insetStyle, oldInset) && (el.style[insetStr as any] = `${insetAllArr[idx]}px`);
-        } else {
-            insetStyle.fill(NaN);
-            changeInsetStyleIdx.forEach((i) => {
-                insetStyle[i] = insetAllArr[i];
-            });
-            !onMoving?.(insetStyle, oldInset) &&
-                (el.style.inset = insetStyle.map((e) => (Number.isNaN(e) ? 'auto' : `${e}px`)).join(' '));
-        }
-    };
-
-    // 触发移动
-    let enableMove = false;
-    // 移动中
-    const onMove = (evt: PointerEvent | TouchEvent) => {
-        if (evt instanceof TouchEvent) {
-            el.removeEventListener('pointermove', onMove);
-            const { clientX, clientY } = evt.touches[0];
-            (evt as any).clientX = clientX;
-            (evt as any).clientY = clientY;
-        }
-        const { clientX, clientY } = evt as PointerEvent;
-        if (!!setDefault?.({ clientX, clientY }, false)) {
-            timer && clearTimeout(timer);
-            return;
-        }
-        evt.preventDefault();
-        evt.stopPropagation();
-        enableMove && setElPos(clientX, clientY);
-    };
-
-    // 开始移动
-    const onPointerdown = (evt: PointerEvent) => {
-        setStyle(el, 'moved', true);
-        const { clientX, clientY } = evt;
-        if (!!setDefault?.({ clientX, clientY }, true)) return;
-        // 适用于移动设备
-        device !== 'pc' &&
-            document.addEventListener('touchmove', onMove, {
-                passive: false,
-                capture: true,
-            });
-        // 适用于PC, 移动设备 touch 会不定时触发 pointerleave, 无法用 onpointermove 监听
-        device !== 'mobile' &&
-            document.addEventListener('pointermove', onMove, {
-                passive: false,
-                capture: true,
-            });
-        document.addEventListener('pointerup', stopMove, { once: true });
-        timer = setTimeout(() => {
-            // 记录移动前光标位置
-            recordPointerPos(clientX, clientY);
-            onBeforeMove?.([...insetStyle]);
-            setStyle(el, 'moving');
-            // 开启移动
-            enableMove = true;
-            // pc端支持长按click事件，因此这里要判断超出 ms 时长即判定为拖拽而非 click
-            // 捕获阶段阻止冒泡，中断之后的事件流
-            if (device === 'pc' || !device) {
-                el.removeEventListener('click', stopClickPropagation, true);
-                el.addEventListener('click', stopClickPropagation, { capture: true, once: true });
-            }
-        }, ms);
-    };
-    el.addEventListener('pointerdown', onPointerdown);
-
-    // 停止移动
-    const stopMove = () => {
-        timer && clearTimeout(timer);
-        document.removeEventListener('pointermove', onMove, true);
-        document.removeEventListener('touchmove', onMove, true);
-        if (enableMove) {
-            setStyle(el, 'moving', true);
-            setStyle(el, 'moved');
-            onMoved?.([...insetStyle]);
-            enableMove = false;
-        }
-        enableMove = false;
-    };
-
-    // 阻止PC端点击事件冒泡
-    const stopClickPropagation = (evt: MouseEvent) => {
-        const { pointerType } = evt as PointerEvent;
-        if (pointerType === 'mouse' || !pointerType) {
-            evt.stopPropagation();
-        }
+    addEventListener('resize', onResize);
+    return () => {
+        removeEventListener('resize', onResize);
     };
 };
+const cleanComputeWindowRect = computeWindowRect();
 
-export default { mounted: draggable };
+const draggable = (el: HTMLElement, { value }: DirectiveBinding<BindingValue>) => {
+    // 监听移动时的回调 / 移动结束时的回调
+    const onMove = typeOf.isFunction(value) ? value : value?.onMove;
+    let onMoved: null | (() => void) = null;
+
+    // 触发拖拽光标长按时间
+    const ms = (value as Exclude<BindingValue, OnMove>)?.ms ?? 80;
+    const capture = (value as Exclude<BindingValue, OnMove>)?.capture ?? false;
+    const direction = (value as Exclude<BindingValue, OnMove>)?.direction ?? DragDirection.top_left;
+    const classNameOnDragging = (value as Exclude<BindingValue, OnMove>)?.class;
+
+    // 设置移动时的 class 样式
+    const setClass = () => {
+        if (!classNameOnDragging) return null;
+        const { classList } = el;
+        const { margin, transform } = el.style;
+        // margin \ transform 影响 inset 位置
+        el.style.margin = '';
+        el.style.transform = '';
+        classList.add(classNameOnDragging);
+        return () => {
+            classList.remove(classNameOnDragging);
+            el.style.margin = margin;
+            el.style.transform = transform;
+        };
+    };
+    let removeClass: null | (() => void) = null;
+
+    // 目标元素开始 drag 时的位置 Rect
+    let elRectOnStartDrag: DOMRect | null = null;
+    // 是否冒泡标识，null则阻止冒泡，否则正常冒泡
+    let propagationFlag: number | NodeJS.Timeout | null = null;
+
+    // 根据 DOMRect 中的 'top' | 'left' | 'width' | 'height' 四个属性计算 inset
+    const computeInset = ({ top, left, width, height }: Record<'top' | 'left' | 'width' | 'height', number>) => {
+        const [right, bottom] = [innerWidth - width - left, innerHeight - height - top];
+        return [top, right, bottom, left] as InsetTurtle;
+    };
+
+    // 根据 direction 判断该改变 el.style.inset 的哪个值(动画帧节流处理)
+    const setInsetStyle = throttle(([top, right, bottom, left]: InsetTurtle) => {
+        direction & Inset.top && (el.style.top = top + 'px');
+        direction & Inset.right && (el.style.right = right + 'px');
+        direction & Inset.bottom && (el.style.bottom = bottom + 'px');
+        direction & Inset.left && (el.style.left = left + 'px');
+    });
+
+    let curInset: InsetTurtle;
+    cleanup = el.onDrag(
+        (evt) => {
+            // 记录目标元素开始 drag 时的 Rect
+            elRectOnStartDrag ??= (() => {
+                // 开始 drag 时触发，之后 dragging 过程中不再触发
+                if ((evt as PointerEvent).pointerType === 'mouse') {
+                    // 设置定时器，若 dragEnd 时超时（即定时器为null了）则判定为长按，不冒泡
+                    propagationFlag = setTimeout(() => {
+                        clearTimeout(propagationFlag as number);
+                        propagationFlag = null;
+                    }, ms);
+                } else {
+                    propagationFlag = 1;
+                }
+                removeClass = setClass();
+                const rect = el.getBoundingClientRect();
+                // 计算开始时刻 el 的位置
+                curInset = computeInset(rect);
+                return rect;
+            })();
+
+            const { top: top_, left: left_, height, width } = elRectOnStartDrag;
+            // pointer 移动的位移坐标
+            const {
+                position: { startClientY, clientY, clientX, startClientX },
+            } = evt;
+            const [deltaX, deltaY] = [clientX - startClientX, clientY - startClientY];
+            // 若 direction 指定单一维度，指针移动方向为另一维度则直接 return; 如 指定 left, 当指针上下移动时不会反应
+            let preventMove =
+                !!((Inset.left | (Inset.right & direction)) === direction && Math.abs(deltaY) > Math.abs(deltaX)) ||
+                !!((Inset.top | (Inset.bottom & direction)) === direction && Math.abs(deltaY) < Math.abs(deltaX));
+            if (!preventMove) {
+                const [top, left] = [top_ + deltaY, left_ + deltaX];
+                // 计算 el 将要移动到的位置
+                const inset = computeInset({ height, width, top, left });
+                // 入参中传入一个 preventMove 函数，调用则停止此次移动
+                onMoved = onMove?.call({ el, evt }, curInset, inset, () => (preventMove = true)) ?? null;
+                if (!preventMove) {
+                    // 如果此次移动，将阻止默认事件，避免造成冲突
+                    evt.cancelable && evt.preventDefault();
+                    setInsetStyle(inset);
+                    curInset = inset;
+                }
+            }
+
+            return (evt) => {
+                propagationFlag ??
+                    el.addEventListener('click', (e) => e.stopPropagation(), { once: true, capture: true });
+                elRectOnStartDrag = null;
+                removeClass?.();
+                onMoved?.call({ el, evt });
+                removeClass = null;
+                onMoved = null;
+            };
+        },
+        { capture, passive: false }
+    );
+};
+
+export default {
+    mounted: draggable,
+    beforeUnmount: () => {
+        cleanup?.();
+        cleanComputeWindowRect();
+    },
+};
