@@ -21,7 +21,7 @@ interface GetEventCb<EvtName, Evt extends any[], T> {
  * @property {@link getCbsNum} 获取事件绑定的 cb 个数
  */
 export function eventListener<EvtName extends string | number | symbol, Evt extends any[] = any[], T = any>(this: T) {
-    const _evtHooksRecord = {} as Record<EvtName, Array<(...evt: Evt) => void>>;
+    const _evtHooksRecord = {} as Record<EvtName, ((...evt: Evt) => Promise<void> | void)[]>;
     const _findEvtHooks = (evtName: EvtName) => {
         _evtHooksRecord[evtName] ||= [];
         return _evtHooksRecord[evtName];
@@ -37,22 +37,22 @@ export function eventListener<EvtName extends string | number | symbol, Evt exte
     // 获取事件绑定的 cb 个数
     const getCbsNum = (evtName: EvtName) => _findEvtHooks(evtName).length;
     // 派发事件，类似于 dispatchEvent
-    const emit = (evtName: EvtName, ...evt: Evt) => {
-        for (const cbk of _findEvtHooks(evtName)) {
-            cbk.apply(this, evt);
+    const emit = async (evtName: EvtName, ...evt: Evt) => {
+        for (const cb of _findEvtHooks(evtName)) {
+            await cb.apply(this, evt);
         }
     };
     // 添加事件，类似于 addEventListener
-    const on = (evtName: EvtName, listener: (this: T, ...evt: Evt) => void) => {
+    const on = (evtName: EvtName, listener: (this: T, ...evt: Evt) => Promise<void> | void) => {
         _findEvtHooks(evtName).push(listener);
     };
     // 移除事件，类似于 removeEventListener
-    const off = (evtName: EvtName, listener: (this: T, ...evt: Evt) => void) => {
+    const off = (evtName: EvtName, listener: (this: T, ...evt: Evt) => Promise<void> | void) => {
         const evtHooks = _findEvtHooks(evtName);
         evtHooks.splice(evtHooks.indexOf(listener), 1);
     };
     // 单次事件，类似于 addEventListener(,,{once: true})
-    const once = (evtName: EvtName, listener: (this: T, ...evt: Evt) => void) => {
+    const once = (evtName: EvtName, listener: (this: T, ...evt: Evt) => Promise<void> | void) => {
         const ls = (...evt: Evt) => {
             listener.apply(this, evt);
             off(evtName, ls);
