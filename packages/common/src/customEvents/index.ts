@@ -1,13 +1,13 @@
 import onDrag from './onDrag';
 
-const customEvents = { onDrag };
-
 declare global {
     interface HTMLElement {
-        prototype: HTMLElement & typeof customEvents;
+        onDrag: typeof onDrag
     }
 }
 
-Object.assign(HTMLElement.prototype, customEvents);
+export const customEvents = { onDrag };
 
-export default customEvents;
+export const addCustomEvents = (evts?: Partial<typeof customEvents>) => {
+    Object.assign(HTMLElement.prototype, evts ?? customEvents);
+};
