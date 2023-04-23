@@ -4,9 +4,9 @@
  * @description 事件监听器, 用于需要监听自定义事件的类继承或挂载其成员方法 on\off\emit , 或需要监听自定义事件的对象挂载 on\off\emit 方法
  */
 
-interface GetEventCb<EvtName, Evt extends any[], T> {
-    (evtName: EvtName, idx: number): undefined | ((this: T, ...evt: Evt) => void);
-    (evtName: EvtName, listener: (this: T, ...evt: Evt) => void): number;
+interface GetEventCb<EvtName, Evt extends any[]> {
+    (evtName: EvtName, idx: number): undefined | ((...evt: Evt) => void);
+    (evtName: EvtName, listener: (...evt: Evt) => void): number;
 }
 
 /**
@@ -33,28 +33,28 @@ export function eventListener<EvtName extends string | number | symbol, Evt exte
         } else {
             return _findEvtHooks(evtName).indexOf(p);
         }
-    }) as GetEventCb<EvtName, Evt, T>;
+    }) as GetEventCb<EvtName, Evt>;
     // 获取事件绑定的 cb 个数
     const getCbsNum = (evtName: EvtName) => _findEvtHooks(evtName).length;
     // 派发事件，类似于 dispatchEvent
     const emit = async (evtName: EvtName, ...evt: Evt) => {
         for (const cb of _findEvtHooks(evtName)) {
-            await cb.apply(this, evt);
+            await cb(...evt);
         }
     };
     // 添加事件，类似于 addEventListener
-    const on = (evtName: EvtName, listener: (this: T, ...evt: Evt) => Promise<void> | void) => {
+    const on = (evtName: EvtName, listener: (...evt: Evt) => Promise<void> | void) => {
         _findEvtHooks(evtName).push(listener);
     };
     // 移除事件，类似于 removeEventListener
-    const off = (evtName: EvtName, listener: (this: T, ...evt: Evt) => Promise<void> | void) => {
+    const off = (evtName: EvtName, listener: (...evt: Evt) => Promise<void> | void) => {
         const evtHooks = _findEvtHooks(evtName);
         evtHooks.splice(evtHooks.indexOf(listener), 1);
     };
     // 单次事件，类似于 addEventListener(,,{once: true})
-    const once = (evtName: EvtName, listener: (this: T, ...evt: Evt) => Promise<void> | void) => {
+    const once = (evtName: EvtName, listener: (...evt: Evt) => Promise<void> | void) => {
         const ls = (...evt: Evt) => {
-            listener.apply(this, evt);
+            listener(...evt);
             off(evtName, ls);
         };
         on(evtName, ls);

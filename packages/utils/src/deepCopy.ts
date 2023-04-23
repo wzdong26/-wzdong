@@ -31,25 +31,23 @@ const deepCopySimplify = (obj: unknown, visited = new WeakMap()) => {
 };
 
 const deepCopy = (obj: unknown, visited = new WeakMap()) => {
-    let copied = obj;
-
     // 函数
     if (obj instanceof Function) {
         let fnStr = obj.toString();
         if (fnStr.indexOf('(') > 0) {
             fnStr = 'function' + fnStr.slice(fnStr.indexOf('('));
         }
-        return (copied = new Function('return ' + fnStr)());
+        return new Function('return ' + fnStr)();
     }
 
     // Map
-    if (obj instanceof Map) return (copied = new Map(deepCopySimplify([...obj], visited)));
+    if (obj instanceof Map) return new Map(deepCopySimplify([...obj], visited));
 
     // Set
-    if (obj instanceof Set) return (copied = new Set(deepCopySimplify([...obj], visited)));
+    if (obj instanceof Set) return new Set(deepCopySimplify([...obj], visited));
 
     // 常规对象、数组、非引用类型
-    return (copied = deepCopySimplify(obj, visited));
+    return deepCopySimplify(obj, visited);
 };
 
 export default deepCopy;

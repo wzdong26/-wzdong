@@ -11,13 +11,10 @@
  */
 export const debounce = <T extends any[], R>(handler: (...params: T) => R, ms: number = 800) => {
     let timer: any;
-    return function <TT = any>(this: TT, ...params: T) {
+    return function (...params: T) {
         return new Promise<R>((resolve) => {
-            if (timer) {
-                clearTimeout(timer);
-                timer = null;
-            }
-            timer = setTimeout(() => resolve(handler.apply(this, params)), ms);
+            timer && clearTimeout(timer);
+            timer = setTimeout(() => resolve(handler(...params)), ms);
         });
     };
 };

@@ -16,25 +16,25 @@ export const throttle = <T extends any[]>(handler: (...params: T) => void, ms?: 
     let flag: boolean = true;
     // 1. animationFrameThrottle
     if (!ms)
-        return function <TT = any>(this: TT, ...params: T) {
+        return function <TT = any>(...params: T) {
             if (flag) {
                 flag = false;
                 requestAnimationFrame(() => {
                     flag = true;
-                    handler.apply(this, params);
+                    handler(...params);
                 });
             }
         };
     // 2. setTimeoutThrottle
-    const setToLastTime = debounce(function (this: any, params: T, flag: boolean) {
-        !flag && handler.apply(this, params);
+    const setToLastTime = debounce(function (params: T, flag: boolean) {
+        !flag && handler(...params);
     }, ms);
-    return function <TT = any>(this: TT, ...params: T) {
+    return function (...params: T) {
         // 最后一次触发若没有立即执行则在 ms 后执行
-        setToLastTime.apply(this, [params, flag]);
+        setToLastTime(params, flag);
         if (flag) {
             // 事件第一次触发立即执行，之后每隔 ms 执行
-            handler.apply(this, params);
+            handler(...params);
             let timer = setTimeout(() => {
                 flag = true;
                 clearTimeout(timer);

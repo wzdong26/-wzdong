@@ -7,8 +7,8 @@
  */
 
 interface GetUniqueReturn<K, P extends any[], R> {
-    (this: unknown, key: K, ...p: P): R;
-    (this: unknown, key: K): R | undefined;
+    (key: K, ...p: P): R;
+    (key: K): R | undefined;
 }
 interface GetUnique {
     <K, P extends any[], R>(
@@ -17,7 +17,6 @@ interface GetUnique {
         controller: true
     ): GetUniqueReturn<K, P, R>;
     <K, P extends any[], R>(fn: (...p: P) => R, set?: ((key: K, rst: R) => void) | null, controller?: false): (
-        this: unknown,
         key: K,
         ...p: P
     ) => R;
@@ -39,12 +38,12 @@ export const getUnique: GetUnique = <K, P extends any[], R>(
     controller?: boolean
 ) => {
     const results = new Map<K, R>();
-    return function (this: unknown, key: K, ...p: P) {
+    return function (key: K, ...p: P) {
         const rst = results.get(key);
         if (controller && !p.length) return rst;
         if (!controller && rst != null) return rst;
 
-        const r = fn.apply(this, p);
+        const r = fn(...p);
         set?.(key, r);
         results.set(key, r);
         return r;
@@ -52,8 +51,8 @@ export const getUnique: GetUnique = <K, P extends any[], R>(
 };
 
 interface GetUniqueAsyncReturn<K, P extends any[], R> {
-    (this: unknown, key: K, ...p: P): Promise<R>;
-    (this: unknown, key: K): Promise<R | undefined>;
+    (key: K, ...p: P): Promise<R>;
+    (key: K): Promise<R | undefined>;
 }
 interface GetUniqueAsync {
     <K, P extends any[], R>(
@@ -62,7 +61,6 @@ interface GetUniqueAsync {
         controller: true
     ): GetUniqueAsyncReturn<K, P, R>;
     <K, P extends any[], R>(fn: (...p: P) => Promise<R>, set?: ((key: K, rst: R) => void) | null, controller?: false): (
-        this: unknown,
         key: K,
         ...p: P
     ) => Promise<R>;
@@ -85,7 +83,7 @@ export const getUniqueAsync: GetUniqueAsync = <K, P extends any[], R>(
 ) => {
     const results = new Map<K, R>();
     const promises = new Map<K, Promise<R> | null>();
-    return async function <T = any>(this: T, key: K, ...p: P) {
+    return async function (key: K, ...p: P) {
         const rst = results.get(key);
         let pending = promises.get(key);
 
@@ -93,7 +91,7 @@ export const getUniqueAsync: GetUniqueAsync = <K, P extends any[], R>(
         if (!controller && rst != null) return rst;
 
         if (!pending) {
-            pending = fn.apply(this, p);
+            pending = fn(...p);
             promises.set(key, pending);
         }
         const r = await pending;
@@ -111,7 +109,6 @@ interface NewUnique {
         controller: true
     ): GetUniqueReturn<K, P, R>;
     <K, P extends any[], R>(fn: new (...p: P) => R, set?: ((key: K, rst: R) => void) | null, controller?: false): (
-        this: unknown,
         key: K,
         ...p: P
     ) => R;
@@ -131,12 +128,12 @@ export const newUnique: NewUnique = (newFn, set, controller) =>
     getUnique((...p) => new newFn(...p), set, controller as any);
 
 interface GetSingleReturn<P extends any[], R> {
-    (this: unknown, ...p: P): R;
-    (this: unknown): R | undefined;
+    (...p: P): R;
+    (): R | undefined;
 }
 interface GetSingle {
     <P extends any[], R>(fn: (...p: P) => R, controller: true): GetSingleReturn<P, R>;
-    <P extends any[], R>(fn: (...p: P) => R, controller?: false): (this: unknown, ...p: P) => R;
+    <P extends any[], R>(fn: (...p: P) => R, controller?: false): (...p: P) => R;
 }
 /**
  * getSingle: 将需要 key 传入的 {@link getUnique} 生成的方法变为不需要 key的方法
@@ -150,18 +147,18 @@ interface GetSingle {
 export const getSingle: GetSingle = <P extends any[], R>(fn: (...p: P) => R, controller?: boolean) => {
     const key = Symbol();
     const uniFn = controller ? getUnique(fn, undefined, controller) : getUnique(fn, undefined);
-    return function (this: unknown, ...p: P) {
-        return uniFn.call(this, key, ...p);
+    return function (...p: P) {
+        return uniFn(key, ...p);
     };
 };
 
 interface GetSingleAsyncReturn<P extends any[], R> {
-    (this: unknown, ...p: P): Promise<R>;
-    (this: unknown): Promise<R | undefined>;
+    (...p: P): Promise<R>;
+    (): Promise<R | undefined>;
 }
 interface GetSingleAsync {
     <P extends any[], R>(fn: (...p: P) => Promise<R>, controller: true): GetSingleAsyncReturn<P, R>;
-    <P extends any[], R>(fn: (...p: P) => Promise<R>, controller?: false): (this: unknown, ...p: P) => Promise<R>;
+    <P extends any[], R>(fn: (...p: P) => Promise<R>, controller?: false): (...p: P) => Promise<R>;
 }
 /**
  * getSingleAsync: 将需要 key 传入的 {@link getUniqueAsync} 生成的方法变为不需要 key的方法
@@ -178,14 +175,14 @@ export const getSingleAsync: GetSingleAsync = <P extends any[], R>(
 ) => {
     const key = Symbol();
     const uniFn = controller ? getUniqueAsync(fn, undefined, controller) : getUniqueAsync(fn, undefined);
-    return async function (this: unknown, ...p: P) {
-        return await uniFn.call(this, key, ...p);
+    return async function (...p: P) {
+        return await uniFn(key, ...p);
     };
 };
 
 interface NewSingle {
     <P extends any[], R>(fn: new (...p: P) => R, controller: true): GetSingleReturn<P, R>;
-    <P extends any[], R>(fn: new (...p: P) => R, controller?: false): (this: unknown, ...p: P) => R;
+    <P extends any[], R>(fn: new (...p: P) => R, controller?: false): (...p: P) => R;
 }
 /**
  * newSingle: 将需要 key 传入的 {@link getUnique} 生成的方法变为不需要 key的方法

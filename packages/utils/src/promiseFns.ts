@@ -8,23 +8,25 @@
  * promiseLimit
  * @param promiseFn promise 函数 (this: T, ...p: P) => Promise<R>
  * @param limit 限制并发数
- * @return function fn (this: T, ...p: P) => Promise<R>
+ * @return function fn (...p: P) => Promise<R>
  */
 export const promiseLimit = <P extends any[], R, T = unknown>(
-    promiseFn: (this: T, ...p: P) => Promise<R>,
+    promiseFn: (...p: P) => Promise<R>,
     maxConcurrency: number,
     limit?: boolean
 ) => {
     const pendingQueue: Set<Promise<R>> = new Set();
-    return async function fn(this: T, ...p: P): Promise<R> {
+    let needAbort = false;
+    async function fn(...p: P): Promise<R> {
         if (pendingQueue.size >= maxConcurrency) {
             if (limit) throw Error(`Promise concurrency exceeds maximum limit ${maxConcurrency}`);
             try {
                 await Promise.race(pendingQueue);
             } catch {}
-            return await fn.apply(this, p);
+            return fn(...p);
         }
-        const pending = promiseFn.apply(this, p);
+        if (needAbort) throw Error('Aborted!');
+        const pending = promiseFn(...p);
         pendingQueue.add(pending);
         try {
             const rst = await pending;
@@ -34,5 +36,9 @@ export const promiseLimit = <P extends any[], R, T = unknown>(
             pendingQueue.delete(pending);
             throw e;
         }
-    };
+    }
+    fn.abort = () => {
+        needAbort = true;
+    }
+    return fn;
 };
