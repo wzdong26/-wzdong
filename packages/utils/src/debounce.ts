@@ -14,7 +14,7 @@ export const debounce = <T extends any[], R>(handler: (...params: T) => R, ms: n
     return function (...params: T) {
         return new Promise<R>((resolve) => {
             timer && clearTimeout(timer);
-            timer = setTimeout(() => resolve(handler(...params)), ms);
+            timer = setTimeout(() => resolve(handler.apply(this, params)), ms);
         });
     };
 };
